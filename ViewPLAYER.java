@@ -1,5 +1,5 @@
 public class ViewPLAYER 
 {
-    //- PLayer modell
-    // transfer from model     
+    // - PLayer modell
+    // - transfer movement from model     
 }
