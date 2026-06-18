@@ -1,0 +1,4 @@
+pubic class ViewShop
+{
+    //w
+}

@@ -5,3 +5,6 @@ Platformer (rest following)
 - shop screen after 5 waves (model u. view)
 - procedual enemy placement (model view)
 - item list (level with higerh wave count)
+-  Based on LibGDX Game Enigne 
+
+
