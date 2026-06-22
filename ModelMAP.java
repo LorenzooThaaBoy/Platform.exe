@@ -3,6 +3,8 @@ public class ModelMAP
     // - collison/check --> ModelPLAYER 
 }
 
+//TODO: Delete this now just for info/backtracing 
+
 /* Prompt: Als Grundinformation, wir entwickeln ein Spiel in Java auf der LibGDX Engine. Wir benutzen das MVC Model. Es ist ein 
 stationärer Platfromer mit 3-5 PLatformen und einem Boden. Wir haben Sprits für Background, PLatformen und Spieler in .png. 
 Der Spieler kann springen, laufen, mit einem Schwert angreifen. Er hat 3 Leben und die Gegner fliegen und bei einer berührung 
