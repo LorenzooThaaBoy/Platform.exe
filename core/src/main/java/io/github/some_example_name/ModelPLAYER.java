@@ -91,10 +91,7 @@ public class ModelPLAYER {
     }
 
     //Item müssen auch noch implementiert werden: 
-    // DMG up
-    // Range up
-    // HP up
-    // Speed up
-    // Dash!
+    // 
+    //TODO: DMG up, Range up, HP up, Speed up, Dash!
     //...
 }
