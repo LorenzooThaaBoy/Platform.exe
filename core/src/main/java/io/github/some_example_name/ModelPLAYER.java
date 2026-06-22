@@ -89,4 +89,12 @@ public class ModelPLAYER {
         attackTimer = 0f;
         hurtTimer = 0f;
     }
+
+    //Item müssen auch noch implementiert werden: 
+    // DMG up
+    // Range up
+    // HP up
+    // Speed up
+    // Dash!
+    //...
 }
