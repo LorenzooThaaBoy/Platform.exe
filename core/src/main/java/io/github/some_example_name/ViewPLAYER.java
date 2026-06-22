@@ -1,6 +1,6 @@
 package io.github.some_example_name;
 
-import com.badlogic.gdx.graphics.Color; //TODO: Player Sprites
+import com.badlogic.gdx.graphics.Color; //TODO: Player Sprites (for spine engine maby idk)
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class ViewPLAYER {
