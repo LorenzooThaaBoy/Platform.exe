@@ -4,12 +4,24 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class ViewMain extends ApplicationAdapter {
+    private static final Rectangle RESTART_BUTTON = new Rectangle(245f, 180f, 150f, 54f);
+
+    private OrthographicCamera camera;
+    private FitViewport viewport;
     private ShapeRenderer shapes;
+    private SpriteBatch batch;
+    private BitmapFont font;
 
     ModelMAP map;
     ModelPLAYER player;
@@ -32,7 +44,11 @@ public class ViewMain extends ApplicationAdapter {
 
     @Override
     public void create() {
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT, camera);
         shapes = new ShapeRenderer();
+        batch = new SpriteBatch();
+        font = new BitmapFont();
 
         map = new ModelMAP();
         player = new ModelPLAYER();
@@ -53,6 +69,9 @@ public class ViewMain extends ApplicationAdapter {
     public void render() {
         float delta = Math.min(Gdx.graphics.getDeltaTime(), 1f / 30f);
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        viewport.apply();
+        shapes.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
 
         if (gameState == GameState.PLAYING) {
             controllerPlayer.update(player, map, delta);
@@ -61,7 +80,7 @@ public class ViewMain extends ApplicationAdapter {
             if (player.getLives() <= 0) {
                 gameState = GameState.GAME_OVER;
             }
-        } else if (gameState == GameState.GAME_OVER && Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+        } else if (gameState == GameState.GAME_OVER && restartRequested()) {
             restart();
         }
 
@@ -80,11 +99,22 @@ public class ViewMain extends ApplicationAdapter {
         }
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
+
+        batch.begin();
+        renderText();
+        batch.end();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
     }
 
     @Override
     public void dispose() {
         shapes.dispose();
+        batch.dispose();
+        font.dispose();
     }
 
     private void restart() {
@@ -104,6 +134,25 @@ public class ViewMain extends ApplicationAdapter {
         shapes.setColor(0f, 0f, 0f, 0.55f);
         shapes.rect(0f, 0f, ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT);
         shapes.setColor(0.9f, 0.2f, 0.25f, 1f);
-        shapes.rect(220f, 210f, 200f, 60f);
+        shapes.rect(RESTART_BUTTON.x, RESTART_BUTTON.y, RESTART_BUTTON.width, RESTART_BUTTON.height);
+    }
+
+    private boolean restartRequested() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) return true;
+        if (!Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) return false;
+
+        Vector2 click = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+        return RESTART_BUTTON.contains(click);
+    }
+
+    private void renderText() {
+        font.draw(batch, "Lives: " + player.getLives(), 16f, ModelMAP.WORLD_HEIGHT - 38f);
+        font.draw(batch, "Move: A/D  Jump: W/Space  Attack: Right Mouse", 16f, ModelMAP.WORLD_HEIGHT - 58f);
+
+        if (gameState == GameState.GAME_OVER) {
+            font.draw(batch, "GAME OVER", 285f, 260f);
+            font.draw(batch, "RESTART", RESTART_BUTTON.x + 45f, RESTART_BUTTON.y + 33f);
+            font.draw(batch, "Press R or click the button", 235f, 160f);
+        }
     }
 }

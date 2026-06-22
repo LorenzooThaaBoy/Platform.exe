@@ -11,11 +11,11 @@ public class ModelMAP {
     private final Array<Rectangle> platforms = new Array<>();
     private final Array<Vector2> enemySpawnPoints = new Array<>();
 
-    public ModelMAP() {
+    public ModelMAP() { //TODO: make things match better + total 5 platforms, more height 
         platforms.add(new Rectangle(0f, 0f, WORLD_WIDTH, 36f));
-        platforms.add(new Rectangle(80f, 120f, 150f, 22f));
-        platforms.add(new Rectangle(280f, 210f, 140f, 22f));
-        platforms.add(new Rectangle(470f, 135f, 120f, 22f));
+        platforms.add(new Rectangle(80f, 90f, 150f, 22f));
+        platforms.add(new Rectangle(280f, 160f, 160f, 22));
+        platforms.add(new Rectangle(470f, 90f, 120f, 22));
 
         enemySpawnPoints.add(new Vector2(-40f, 310f));
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH + 40f, 330f));
