@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class ControllerENEMY {
-    private static final int MAX_ENEMIES = 7;
+    private static final int MAX_ENEMIES = 0;
     private static final float SPAWN_INTERVAL = 2.2f;
 
     private final Array<ModelENEMY> enemies = new Array<>();
@@ -29,7 +29,7 @@ public class ControllerENEMY {
                 continue;
             }
 
-            enemy.updateTowards(player.getBounds(), delta);
+            enemy.updateTowards(player.getBounds(), delta); //TODO: potentially make these TODOS into git issues idk tho 
 
             if (player.isAttacking() && player.getAttackBounds().overlaps(enemy.getBounds())) { // enemy death logic
                 enemy.kill();

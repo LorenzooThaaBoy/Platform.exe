@@ -63,8 +63,8 @@ public class ControllerPLAYER {
             }
         }
 
-        if (bounds.y < 0f) {
-            bounds.y = 0f;
+        if (bounds.y < ModelMAP.GROUND_Y) {
+            bounds.y = ModelMAP.GROUND_Y;
             player.getVelocity().y = 0f;
             player.setGrounded(true);
         }

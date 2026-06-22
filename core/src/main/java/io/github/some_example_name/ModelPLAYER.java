@@ -12,7 +12,7 @@ public class ModelPLAYER {
     private static final float ATTACK_DURATION = 0.18f;
     private static final float HURT_DURATION = 0.75f;
 
-    private final Rectangle bounds = new Rectangle(80f, 36f, WIDTH, HEIGHT);
+    private final Rectangle bounds = new Rectangle(80f, ModelMAP.GROUND_Y, WIDTH, HEIGHT);
     private final Vector2 velocity = new Vector2();
     private int lives = 3;
     private int facing = 1;
@@ -81,7 +81,7 @@ public class ModelPLAYER {
     }
 
     public void reset() {
-        bounds.set(80f, 36f, WIDTH, HEIGHT);
+        bounds.set(80f, ModelMAP.GROUND_Y, WIDTH, HEIGHT);
         velocity.setZero();
         lives = 3;
         facing = 1;

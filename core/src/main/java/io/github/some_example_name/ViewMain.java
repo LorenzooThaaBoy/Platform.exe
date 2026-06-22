@@ -84,21 +84,29 @@ public class ViewMain extends ApplicationAdapter {
             restart();
         }
 
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        shapes.begin(ShapeRenderer.ShapeType.Filled);
         if (gameState == GameState.SHOP) {
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            shapes.begin(ShapeRenderer.ShapeType.Filled);
             viewShop.render(shapes);
+            shapes.end();
+            Gdx.gl.glDisable(GL20.GL_BLEND);
         } else {
-            viewMap.render(shapes, map);
+            batch.begin();
+            viewMap.render(batch, map);
+            batch.end();
+
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            shapes.begin(ShapeRenderer.ShapeType.Filled);
+            //viewMap.renderHitboxGuides(shapes, map); //TODO: if build failed error not fixed take care of 
             viewEnemy.render(shapes, controllerEnemy);
             viewPlayer.render(shapes, player);
             renderLives();
             if (gameState == GameState.GAME_OVER) {
                 renderGameOverOverlay();
             }
+            shapes.end();
+            Gdx.gl.glDisable(GL20.GL_BLEND);
         }
-        shapes.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
 
         batch.begin();
         renderText();
@@ -112,6 +120,7 @@ public class ViewMain extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        viewMap.dispose();
         shapes.dispose();
         batch.dispose();
         font.dispose();
