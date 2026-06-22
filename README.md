@@ -1,4 +1,4 @@
-# Platformer2.0
+# Platformer THE GAME 
 
 ## Game idea 
 Shit wil come ...
