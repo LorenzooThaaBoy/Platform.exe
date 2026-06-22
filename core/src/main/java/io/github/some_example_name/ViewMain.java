@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -18,7 +18,7 @@ public class ViewMain extends ApplicationAdapter {
     private static final Rectangle RESTART_BUTTON = new Rectangle(245f, 180f, 150f, 54f);
 
     private OrthographicCamera camera;
-    private FitViewport viewport;
+    private StretchViewport viewport;
     private ShapeRenderer shapes;
     private SpriteBatch batch;
     private BitmapFont font;
@@ -45,7 +45,7 @@ public class ViewMain extends ApplicationAdapter {
     @Override
     public void create() {
         camera = new OrthographicCamera();
-        viewport = new FitViewport(ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT, camera);
+        viewport = new StretchViewport(ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT, camera);
         shapes = new ShapeRenderer();
         batch = new SpriteBatch();
         font = new BitmapFont();

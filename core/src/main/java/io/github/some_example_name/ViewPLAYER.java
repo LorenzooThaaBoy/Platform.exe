@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class ViewPLAYER {
     public void render(ShapeRenderer shapes, ModelPLAYER player) {
-        if (player.isHurt()) { //AUA
+        if (player.isHurt()) { //AUA https://youtu.be/unguG0f3xyk?si=wVCINfs0U8mpaCos
             shapes.setColor(new Color(1f, 0.35f, 0.35f, 1f));
         } else {
             shapes.setColor(new Color(0.25f, 0.62f, 1f, 1f));

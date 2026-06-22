@@ -50,10 +50,11 @@ public class ControllerENEMY {
     }
 
     private void spawnEnemy(ModelMAP map) {
-        if (map.getEnemySpawnPoints().size == 0) return;
+        if (map.getEnemySpawnPoints().size == 0) return; //TODO: Enemy progression for rounds -- more spwan points 
 
         Vector2 spawnPoint = map.getEnemySpawnPoints().get(nextSpawnPoint);
         enemies.add(new ModelENEMY(spawnPoint.x, spawnPoint.y));
         nextSpawnPoint = (nextSpawnPoint + 1) % map.getEnemySpawnPoints().size;
     }
+    //TODO: Setup rounds, item and enemy progression and shop transiton + find items and sprites 
 }

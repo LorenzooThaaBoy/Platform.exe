@@ -20,7 +20,7 @@ public class ModelPLAYER {
     private float attackTimer;
     private float hurtTimer;
 
-    public Rectangle getBounds() {
+    public Rectangle getBounds() { //TODO: More rectangles ig collision with joints 
         return bounds;
     }
 
