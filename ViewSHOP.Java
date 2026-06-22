@@ -1,4 +1,4 @@
-pubic class ViewShop
+public class ViewSHOP
 {
     //w
 }

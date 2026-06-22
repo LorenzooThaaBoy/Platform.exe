@@ -10,10 +10,33 @@ public class ViewMain extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture image;
 
+    ModelMAP map;
+    ModelPLAYER player;
+    ModelSHOP shop; 
+
+    ControllerPLAYER controllerPlayer;
+    ControllerENEMY controllerEnemy;
+    ControllerSHOP controllerShop; 
+
+    ViewMAP viewMap;
+    ViewPLAYER viewPlayer; 
+    ViewENEMY viewEnemy;
+    ViewSHOP viewShop;
+
+    enum GameState{
+        PLAYING, SHOP, GAME_OVER
+    }
+
+    GameState gameState = GameState.PLAYING;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
+        batch = new SpriteBatch();
+
+        map = new ModelMAP();
+
     }
 
     @Override
