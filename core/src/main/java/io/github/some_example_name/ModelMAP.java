@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class ModelMAP {
+public class ModelMAP { //Map parameters
     public static final float WORLD_WIDTH = 640f;
     public static final float WORLD_HEIGHT = 480f;
 

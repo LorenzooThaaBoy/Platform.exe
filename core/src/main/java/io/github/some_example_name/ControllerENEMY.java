@@ -1,4 +1,4 @@
-package io.github.some_example_name;
+package io.github.some_example_name; //TODO: Make a git release version + see how to make package/.jdk 
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -22,7 +22,7 @@ public class ControllerENEMY {
             spawnTimer = SPAWN_INTERVAL;
         }
 
-        for (int i = enemies.size - 1; i >= 0; i--) {
+        for (int i = enemies.size - 1; i >= 0; i--) { //enemy death
             ModelENEMY enemy = enemies.get(i);
             if (!enemy.isAlive()) {
                 enemies.removeIndex(i);
@@ -31,7 +31,7 @@ public class ControllerENEMY {
 
             enemy.updateTowards(player.getBounds(), delta);
 
-            if (player.isAttacking() && player.getAttackBounds().overlaps(enemy.getBounds())) {
+            if (player.isAttacking() && player.getAttackBounds().overlaps(enemy.getBounds())) { // enemy death logic
                 enemy.kill();
                 enemies.removeIndex(i);
                 continue;

@@ -10,24 +10,24 @@ public class ControllerPLAYER {
         player.updateTimers(delta);
 
         float movement = 0f;
-        if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) { //left
             movement -= 1f;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {//right
             movement += 1f;
         }
 
         player.setFacingFromMovement(movement);
         player.getVelocity().x = movement * ModelPLAYER.MOVE_SPEED;
 
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.W)
-            || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.W) //foward
+            || Gdx.input.isKeyJustPressed(Input.Keys.SPACE) //jump
             || Gdx.input.isKeyJustPressed(Input.Keys.UP)) && player.isGrounded()) {
             player.getVelocity().y = ModelPLAYER.JUMP_SPEED;
             player.setGrounded(false);
         }
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT) //attck
             || Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) {
             player.startAttack();
         }
@@ -35,7 +35,7 @@ public class ControllerPLAYER {
         moveAndCollide(player, map, delta);
     }
 
-    private void moveAndCollide(ModelPLAYER player, ModelMAP map, float delta) {
+    private void moveAndCollide(ModelPLAYER player, ModelMAP map, float delta) { //colllison logic 
         Rectangle bounds = player.getBounds();
 
         bounds.x += player.getVelocity().x * delta;
@@ -53,7 +53,7 @@ public class ControllerPLAYER {
             float previousTop = previousY + bounds.height;
             float platformTop = platform.y + platform.height;
 
-            if (player.getVelocity().y <= 0f && previousBottom >= platformTop - 3f) {
+            if (player.getVelocity().y <= 0f && previousBottom >= platformTop - 3f) { //platform collision
                 bounds.y = platformTop;
                 player.getVelocity().y = 0f;
                 player.setGrounded(true);

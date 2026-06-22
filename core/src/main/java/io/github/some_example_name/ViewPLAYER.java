@@ -1,11 +1,11 @@
 package io.github.some_example_name;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Color; //TODO: Player Sprites
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class ViewPLAYER {
     public void render(ShapeRenderer shapes, ModelPLAYER player) {
-        if (player.isHurt()) {
+        if (player.isHurt()) { //AUA
             shapes.setColor(new Color(1f, 0.35f, 0.35f, 1f));
         } else {
             shapes.setColor(new Color(0.25f, 0.62f, 1f, 1f));
