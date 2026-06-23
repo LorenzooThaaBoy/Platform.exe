@@ -49,4 +49,6 @@ For example, `core:clean` removes `build` folder only from the `core` project.
 
 
 ## Installation 
-Will come soon ...
+### MacOs
+### Windows
+### Linux (if supported) 
