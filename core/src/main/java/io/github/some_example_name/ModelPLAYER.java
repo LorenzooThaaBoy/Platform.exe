@@ -94,4 +94,15 @@ public class ModelPLAYER {
     // 
     //TODO: DMG up, Range up, HP up, Speed up, Dash!
     //...
+    //TODO: komliziertere Items:
+//Blitz: bei Gegner Treffer schießt ein Blitz auf zufälligen Gegner der dan dmg bekommt
+//Scatter: wenn Angriff Gegner trifft, werden bei dabei viele Projektile rausgeschossen(pumpgun mäßig), welche anderen Gegner schaden kann
+//Bumerang: man schlägt nicht nur sondern wirft einen Bumerang stattdessen der zurückprallt (oder falls das nicht geht durch Gegner durchgeht) und wieder gefangen wird; somit muss der Bumerang erst gefangen werden bevor er wieder geworfen werden kann
+//Feuerstrahl (brimstone) jeder Angriff dauert länger, aber ein Laser (viel dmg) wird geschossen, der alles durchdringt 
+//"Ewiges Katana": desto länger man nicht angegriffen hat, desto mehr dmg macht man und desto mehr Range hat der Angriff
+//Zauberhut: man steuert mit den pfeiltasten nun eine magiekugel die Schaden macht  und man kann nicht mehr schlagen, magiekugel hat eine dmg Aura, somit muss man sie zu den Gegnern hinbewegen um diese zu dmgen
+//Garlic: kleine dmg aura welche Gegner in zeitintervallen dmg machen (ca alle 5 sec)
+
+//Wie man Wellen schwerer macht: Gegner mehr hp geben (insgesamt hp geben), und das skalieren lassen
+//Mehrmals pro Welle Gegner spawnen lassen 
 }
