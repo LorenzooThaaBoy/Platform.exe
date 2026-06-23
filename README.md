@@ -6,18 +6,25 @@ Platformer THE GAME is a small 2D arena platformer. The player moves across a co
 The current idea is to grow the game into round-based survival: enemies spawn from different sides of the map, chase the player, and deal damage on contact. After surviving rounds, the player should be able to enter a shop and buy upgrades such as more damage, more range, extra HP, more speed, or a dash.
 
 ## Development 
-Shit wil come (screenshot form excel) ...
+//TODO:
+- Excel Screenshot 
+- Arbeitsteilung 
+- Rollen
+- Ai acknowlegment 
+- Game Mechanicks explanantion (depth) 
+- Game Mechanicks + maps screenshot 
 
+## LibGDX Information 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 
 This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
 
-## Platforms
+### Platforms
 
 - `core`: Main module with the application logic shared by all platforms.
 - `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
 
-## Gradle
+### Gradle
 
 This project uses [Gradle](https://gradle.org/) to manage dependencies.
 The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.

@@ -56,5 +56,5 @@ public class ControllerENEMY {
         enemies.add(new ModelENEMY(spawnPoint.x, spawnPoint.y));
         nextSpawnPoint = (nextSpawnPoint + 1) % map.getEnemySpawnPoints().size;
     }
-    //TODO: Setup rounds, item and enemy progression and shop transiton + find items and sprites 
+    //TODO: Setup round syxtem, item and enemy progression and shop transiton + sprites 
 }
