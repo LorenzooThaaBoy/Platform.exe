@@ -20,6 +20,8 @@ public class ModelPLAYER {
     private float attackTimer;
     private float hurtTimer;
     private int attackId;
+    private int attackDirectionX = 1;
+    private int attackDirectionY;
 
     public Rectangle getBounds() { 
         return bounds;
@@ -58,8 +60,11 @@ public class ModelPLAYER {
         if (movement < 0f) facing = -1;
     }
 
-    public void startAttack() {
+    public void startAttack(int directionX, int directionY) {
         if (attackTimer <= 0f) {
+            attackDirectionX = directionX;
+            attackDirectionY = directionY;
+            if (directionX != 0) facing = directionX;
             attackTimer = ATTACK_DURATION;
             attackId++;
         }
@@ -71,6 +76,14 @@ public class ModelPLAYER {
 
     public int getSwordDamage() {
         return 1;
+    }
+
+    public int getAttackDirectionX() {
+        return attackDirectionX;
+    }
+
+    public int getAttackDirectionY() {
+        return attackDirectionY;
     }
 
     public void takeDamage() {
@@ -85,10 +98,12 @@ public class ModelPLAYER {
     }
 
     public Rectangle getAttackBounds() {
-        float attackWidth = 38f;
-        float attackHeight = 28f;
-        float attackX = facing > 0 ? bounds.x + bounds.width : bounds.x - attackWidth;
-        float attackY = bounds.y + 10f;
+        float attackWidth = attackDirectionY > 0 ? 30f : 38f;
+        float attackHeight = attackDirectionY > 0 ? 42f : 28f;
+        float attackX = attackDirectionY > 0
+            ? bounds.x + bounds.width / 2f - attackWidth / 2f
+            : attackDirectionX > 0 ? bounds.x + bounds.width : bounds.x - attackWidth;
+        float attackY = attackDirectionY > 0 ? bounds.y + bounds.height : bounds.y + 10f;
         return new Rectangle(attackX, attackY, attackWidth, attackHeight);
     }
 
@@ -101,6 +116,8 @@ public class ModelPLAYER {
         attackTimer = 0f;
         hurtTimer = 0f;
         attackId = 0;
+        attackDirectionX = 1;
+        attackDirectionY = 0;
     }
 
     //Item müssen auch noch implementiert werden: 

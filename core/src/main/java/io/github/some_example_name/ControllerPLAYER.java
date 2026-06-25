@@ -10,10 +10,10 @@ public class ControllerPLAYER {
         player.updateTimers(delta);
 
         float movement = 0f;
-        if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) { //left
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) { //left
             movement -= 1f;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {//right
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {//right
             movement += 1f;
         }
 
@@ -21,15 +21,17 @@ public class ControllerPLAYER {
         player.getVelocity().x = movement * ModelPLAYER.MOVE_SPEED;
 
         if ((Gdx.input.isKeyJustPressed(Input.Keys.W) //foward
-            || Gdx.input.isKeyJustPressed(Input.Keys.SPACE) //jump
-            || Gdx.input.isKeyJustPressed(Input.Keys.UP)) && player.isGrounded()) {
+            || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && player.isGrounded()) { //jump
             player.getVelocity().y = ModelPLAYER.JUMP_SPEED;
             player.setGrounded(false);
         }
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT) //attck
-            || Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) {
-            player.startAttack();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.startAttack(0, 1);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+            player.startAttack(-1, 0);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+            player.startAttack(1, 0);
         }
 
         moveAndCollide(player, map, delta);

@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class ControllerENEMY {
-    private static final int BASE_ENEMIES_PER_WAVE = 4;
+    private static final int BASE_ENEMIES_PER_WAVE = 2;
     private static final int BASE_MAX_ENEMIES = 0;
     private static final int BASE_ENEMY_SWORD_HITS = 1;
     private static final float BASE_ENEMY_SPEED = 95f;
@@ -105,7 +105,7 @@ public class ControllerENEMY {
     }
 
     private void spawnEnemy(ModelMAP map) {
-        if (map.getEnemySpawnPoints().size == 0) return; //TODO: more spwan points 
+        if (map.getEnemySpawnPoints().size == 0) return; 
 
         Vector2 spawnPoint = map.getEnemySpawnPoints().get(nextSpawnPoint);
         enemies.add(new ModelENEMY(spawnPoint.x, spawnPoint.y, getEnemyHitPoints(), getEnemySpeed()));
@@ -128,5 +128,4 @@ public class ControllerENEMY {
     private float getSpawnInterval() {
         return Math.max(0.75f, BASE_SPAWN_INTERVAL - getEnemyCountIncreases() * 0.12f);
     }
-    //TODO: Setup round syxtem, item and enemy progression and shop transiton + sprites 
 }

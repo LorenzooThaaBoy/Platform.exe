@@ -1,9 +1,19 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class ViewENEMY { //TODO: fix spine + sprites for animation 
+public class ViewENEMY { 
+    private static final float SPRITE_SCALE = 3f;
+
+    private final Texture enemyTexture;
+
+    public ViewENEMY() {
+        enemyTexture = new Texture("Enemy_static.png");
+    }
+
     public void render(ShapeRenderer shapes, ControllerENEMY controllerEnemy) {
         shapes.setColor(new Color(0.88f, 0.18f, 0.42f, 1f));
         for (ModelENEMY enemy : controllerEnemy.getEnemies()) {
@@ -13,5 +23,23 @@ public class ViewENEMY { //TODO: fix spine + sprites for animation
                 enemy.getBounds().width / 2f
             );
         }
+    }
+
+    public void renderSprites(SpriteBatch batch, ControllerENEMY controllerEnemy) {
+        for (ModelENEMY enemy : controllerEnemy.getEnemies()) {
+            float spriteWidth = enemy.getBounds().width * SPRITE_SCALE;
+            float spriteHeight = enemy.getBounds().height * SPRITE_SCALE;
+            batch.draw(
+                enemyTexture,
+                enemy.getBounds().x + enemy.getBounds().width / 2f - spriteWidth / 2f,
+                enemy.getBounds().y + enemy.getBounds().height / 2f - spriteHeight / 2f,
+                spriteWidth,
+                spriteHeight
+            );
+        }
+    }
+
+    public void dispose() {
+        enemyTexture.dispose();
     }
 }

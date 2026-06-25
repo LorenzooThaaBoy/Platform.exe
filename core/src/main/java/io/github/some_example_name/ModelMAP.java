@@ -20,10 +20,11 @@ public class ModelMAP { //Map parameters
         platforms.add(new Rectangle(460f, 200f, 150f, 22f)); //top
         platforms.add(new Rectangle(310f, 286f, 150f, 22f)); //on top 
          //jumpheght = 126
-         
-        enemySpawnPoints.add(new Vector2(-40f, 310f)); //TODO: Add more for further progression 
+
+        enemySpawnPoints.add(new Vector2(-40f, 310f)); 
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH + 40f, 330f));
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH + 40f, 210f));
+        enemySpawnPoints.add(new Vector2(WORLD_WIDTH/2, 500f));
     }
 
     public Array<Rectangle> getPlatforms() {

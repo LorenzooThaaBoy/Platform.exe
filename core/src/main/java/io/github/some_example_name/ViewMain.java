@@ -136,6 +136,7 @@ public class ViewMain extends ApplicationAdapter {
             Gdx.gl.glDisable(GL20.GL_BLEND);
 
             batch.begin();
+            viewEnemy.renderSprites(batch, controllerEnemy);
             viewPlayer.render(batch, player, delta);
             batch.end();
 
@@ -171,6 +172,7 @@ public class ViewMain extends ApplicationAdapter {
     public void dispose() {
         viewMap.dispose();
         viewPlayer.dispose();
+        viewEnemy.dispose();
         shapes.dispose();
         batch.dispose();
         font.dispose();
