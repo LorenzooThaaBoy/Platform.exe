@@ -19,8 +19,9 @@ public class ModelPLAYER {
     private boolean grounded;
     private float attackTimer;
     private float hurtTimer;
+    private int attackId;
 
-    public Rectangle getBounds() { //TODO: More rectangles ig collision with joints 
+    public Rectangle getBounds() { 
         return bounds;
     }
 
@@ -58,7 +59,18 @@ public class ModelPLAYER {
     }
 
     public void startAttack() {
-        if (attackTimer <= 0f) attackTimer = ATTACK_DURATION;
+        if (attackTimer <= 0f) {
+            attackTimer = ATTACK_DURATION;
+            attackId++;
+        }
+    }
+
+    public int getAttackId() {
+        return attackId;
+    }
+
+    public int getSwordDamage() {
+        return 1;
     }
 
     public void takeDamage() {
@@ -88,6 +100,7 @@ public class ModelPLAYER {
         grounded = false;
         attackTimer = 0f;
         hurtTimer = 0f;
+        attackId = 0;
     }
 
     //Item müssen auch noch implementiert werden: 

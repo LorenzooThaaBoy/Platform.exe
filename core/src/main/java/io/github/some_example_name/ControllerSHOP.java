@@ -1,5 +1,26 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+
 public class ControllerSHOP {
-    // Shop item selection and returning to the stage will be handled here.
+    public boolean update(ModelSHOP shop) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.A) || Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+            shop.selectPrevious();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.D) || Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+            shop.selectNext();
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            if (shop.isItemSelected()) {
+                return true;
+            }
+
+            shop.selectItem();
+        }
+
+        return false;
+    }
 }

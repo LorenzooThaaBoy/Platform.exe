@@ -9,10 +9,14 @@ public class ModelENEMY {
     private final Rectangle bounds;
     private final Vector2 velocity = new Vector2();
     private boolean alive = true;
-    private float speed = 95f;
+    private final float speed;
+    private int hitPoints;
+    private int lastHitAttackId = -1;
 
-    public ModelENEMY(float x, float y) {
+    public ModelENEMY(float x, float y, int hitPoints, float speed) {
         bounds = new Rectangle(x, y, SIZE, SIZE);
+        this.hitPoints = hitPoints;
+        this.speed = speed;
     }
 
     public Rectangle getBounds() {
@@ -27,8 +31,22 @@ public class ModelENEMY {
         return alive;
     }
 
+    public int getHitPoints() {
+        return hitPoints;
+    }
+
     public void kill() {
         alive = false;
+    }
+
+    public void takeDamage(int damage, int attackId) {
+        if (lastHitAttackId == attackId) return;
+
+        lastHitAttackId = attackId;
+        hitPoints -= damage;
+        if (hitPoints <= 0) {
+            kill();
+        }
     }
 
     public void updateTowards(Rectangle target, float delta) {

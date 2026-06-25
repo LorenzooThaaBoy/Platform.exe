@@ -6,6 +6,9 @@ Platformer THE GAME is a small 2D arena platformer. The player moves across a co
 The current idea is to grow the game into round-based survival: enemies spawn from different sides of the map, chase the player, and deal damage on contact. After surviving rounds, the player should be able to enter a shop and buy upgrades such as more damage, more range, extra HP, more speed, or a dash.
 
 ## Development 
+### Code Strucutre
+We deployed the MCV pattern for easy class overview aswell as it being industry standart for games. Easy debugging and a nice layer overwiev what makes it easy to adjust. The code for this project can be found in "core/src/main/java/io/github/some_example_name" (ik its bad, we'll fix it, probably)
+
 //TODO:
 - Excel Screenshot 
 - Arbeitsteilung 
@@ -48,7 +51,7 @@ Note that most tasks that are not specific to a single project can be run with `
 For example, `core:clean` removes `build` folder only from the `core` project.
 
 
-## Installation 
+## Installation Guide
 ### MacOs
 ### Windows
 ### Linux (if supported) 
