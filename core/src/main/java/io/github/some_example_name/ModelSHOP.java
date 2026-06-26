@@ -11,6 +11,7 @@ public class ModelSHOP {
         HP_UP,
         SPEED_UP,
         DASH,
+        MAGIC_HAT,
         LIGHTNING,
         SCATTER,
         BRIMSTONE
@@ -22,6 +23,7 @@ public class ModelSHOP {
         Item.HP_UP,
         Item.SPEED_UP,
         Item.DASH,
+        Item.MAGIC_HAT,
         Item.LIGHTNING,
         Item.SCATTER,
         Item.BRIMSTONE
@@ -58,6 +60,8 @@ public class ModelSHOP {
                 return "Speed Up";
             case DASH:
                 return "Dash";
+            case MAGIC_HAT:
+                return "Magic Hat";
             case LIGHTNING:
                 return "Lightning";
             case SCATTER:
@@ -81,6 +85,8 @@ public class ModelSHOP {
                 return player.canUpgradeSpeed() ? "x" + player.getNextSpeedMultiplier() + " speed" : "Max speed";
             case DASH:
                 return player.canUpgradeDash() ? (int)player.getNextDashSpeed() + " dash, " + player.getNextDashDamage() + " dmg" : "Max dash";
+            case MAGIC_HAT:
+                return "Primary: arrow orb";
             case LIGHTNING:
                 return "Secondary: C zap";
             case SCATTER:
@@ -126,6 +132,9 @@ public class ModelSHOP {
                 break;
             case DASH:
                 player.upgradeDash();
+                break;
+            case MAGIC_HAT:
+                player.equipPrimaryItem(ModelPLAYER.PrimaryItem.MAGIC_HAT);
                 break;
             case LIGHTNING:
                 player.equipSecondaryItem(ModelPLAYER.SecondaryItem.LIGHTNING);

@@ -3,9 +3,12 @@ package io.github.some_example_name;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+//TODO: mcv pattern + shorten everything if possible 
+
 public class ModelPLAYER {
     public enum PrimaryItem {
-        NONE
+        NONE,
+        MAGIC_HAT
     }
 
     public enum SecondaryItem {
@@ -37,13 +40,18 @@ public class ModelPLAYER {
     private static final float[] DASH_REACH = {0f, 36f, 48f, 62f, 78f};
     private static final int BASE_MAX_LIVES = 3;
     private static final float LIGHTNING_DAMAGE = 2.25f;
-    private static final float BRIMSTONE_CHARGE_DURATION = 0.7f;
+    private static final float BRIMSTONE_CHARGE_DURATION = 1.2f;
     private static final float BRIMSTONE_BEAM_DURATION = 0.22f;
-    private static final float BRIMSTONE_COOLDOWN = 0.4f;
+    private static final float SECONDARY_ABILITY_COOLDOWN = 5f;
     private static final float BRIMSTONE_BEAM_HEIGHT = 18f;
     private static final float BRIMSTONE_DAMAGE = 4f;
+    private static final float MAGIC_ORB_SIZE = 18f;
+    private static final float MAGIC_ORB_BASE_SPEED = 185f;
+    private static final float MAGIC_ORB_BASE_DPS = 2f;
+    private static final float MAGIC_ORB_DAMAGE_INTERVAL = 0.25f;
 
     private final Rectangle bounds = new Rectangle(80f, ModelMAP.GROUND_Y, WIDTH, HEIGHT);
+    private final Rectangle magicOrbBounds = new Rectangle();
     private final Vector2 velocity = new Vector2();
     private int lives = BASE_MAX_LIVES;
     private int maxLives = BASE_MAX_LIVES;
@@ -72,6 +80,8 @@ public class ModelPLAYER {
     private float brimstoneCooldownTimer;
     private int brimstoneDirection = 1;
     private int brimstoneAttackId;
+    private float magicOrbDamageTimer;
+    private int magicOrbAttackId;
 
     public Rectangle getBounds() { 
         return bounds;
@@ -155,6 +165,18 @@ public class ModelPLAYER {
 
     public int getBrimstoneAttackId() {
         return brimstoneAttackId;
+    }
+
+    public Rectangle getMagicOrbBounds() {
+        return magicOrbBounds;
+    }
+
+    public float getMagicOrbDamage() {
+        return MAGIC_ORB_BASE_DPS * MAGIC_ORB_DAMAGE_INTERVAL * DAMAGE_MULTIPLIERS[damageLevel];
+    }
+
+    public int getMagicOrbAttackId() {
+        return magicOrbAttackId;
     }
 
     public void setFacingFromMovement(float movement) {
@@ -269,15 +291,32 @@ public class ModelPLAYER {
         dashCooldownTimer = Math.max(0f, dashCooldownTimer - delta);
         brimstoneBeamTimer = Math.max(0f, brimstoneBeamTimer - delta);
         brimstoneCooldownTimer = Math.max(0f, brimstoneCooldownTimer - delta);
+        updateMagicOrbDamageTimer(delta);
+    }
+
+    public void updatePrimaryItemInput(float delta, float directionX, float directionY) {
+        if (primaryItem != PrimaryItem.MAGIC_HAT) return;
+
+        float lengthSquared = directionX * directionX + directionY * directionY;
+        if (lengthSquared > 0f) {
+            float length = (float)Math.sqrt(lengthSquared);
+            float speed = MAGIC_ORB_BASE_SPEED * SPEED_MULTIPLIERS[speedLevel];
+            magicOrbBounds.x += directionX / length * speed * delta;
+            magicOrbBounds.y += directionY / length * speed * delta;
+        }
+
+        magicOrbBounds.x = Math.max(0f, Math.min(ModelMAP.WORLD_WIDTH - magicOrbBounds.width, magicOrbBounds.x));
+        magicOrbBounds.y = Math.max(ModelMAP.GROUND_Y, Math.min(ModelMAP.WORLD_HEIGHT - magicOrbBounds.height, magicOrbBounds.y));
     }
 
     public void updateSecondaryItemInput(float delta, boolean justPressed, boolean pressed) {
         lightningRequested = false;
 
         if (secondaryItem == SecondaryItem.LIGHTNING) {
-            if (justPressed) {
+            if (justPressed && brimstoneCooldownTimer <= 0f) {
                 lightningRequested = true;
                 lightningAttackId = ++attackId;
+                brimstoneCooldownTimer = SECONDARY_ABILITY_COOLDOWN;
             }
             return;
         }
@@ -292,7 +331,16 @@ public class ModelPLAYER {
             return;
         }
 
-        if (!pressed || brimstoneCooldownTimer > 0f) {
+        if (!pressed) {
+            if (brimstoneChargeTimer >= BRIMSTONE_CHARGE_DURATION) {
+                startBrimstoneBeam();
+            } else {
+                brimstoneChargeTimer = 0f;
+            }
+            return;
+        }
+
+        if (brimstoneCooldownTimer > 0f) {
             brimstoneChargeTimer = 0f;
             return;
         }
@@ -301,10 +349,7 @@ public class ModelPLAYER {
             brimstoneDirection = facing;
         }
 
-        brimstoneChargeTimer += delta;
-        if (brimstoneChargeTimer >= BRIMSTONE_CHARGE_DURATION) {
-            startBrimstoneBeam();
-        }
+        brimstoneChargeTimer = Math.min(BRIMSTONE_CHARGE_DURATION, brimstoneChargeTimer + delta);
     }
 
     public void startDash() {
@@ -366,6 +411,12 @@ public class ModelPLAYER {
         if (canUpgradeDash()) dashLevel++;
     }
 
+    public void equipPrimaryItem(PrimaryItem primaryItem) {
+        this.primaryItem = primaryItem;
+        attackTimer = 0f;
+        resetMagicOrbPosition();
+    }
+
     public void equipSecondaryItem(SecondaryItem secondaryItem) {
         this.secondaryItem = secondaryItem;
         lightningRequested = false;
@@ -408,18 +459,39 @@ public class ModelPLAYER {
         brimstoneCooldownTimer = 0f;
         brimstoneDirection = 1;
         brimstoneAttackId = 0;
+        magicOrbDamageTimer = 0f;
+        magicOrbAttackId = 0;
+        resetMagicOrbPosition();
     }
 
     private void startBrimstoneBeam() {
         brimstoneChargeTimer = 0f;
         brimstoneBeamTimer = BRIMSTONE_BEAM_DURATION;
-        brimstoneCooldownTimer = BRIMSTONE_COOLDOWN;
+        brimstoneCooldownTimer = SECONDARY_ABILITY_COOLDOWN;
         brimstoneAttackId = ++attackId;
     }
 
-    //TODO: more items maby and cooldown for brimstome and zap 
+    private void updateMagicOrbDamageTimer(float delta) {
+        if (primaryItem != PrimaryItem.MAGIC_HAT) return;
 
-//Bumerang: man schlägt nicht nur sondern wirft einen Bumerang stattdessen der zurückprallt (oder falls das nicht geht durch Gegner durchgeht) und wieder gefangen wird; somit muss der Bumerang erst gefangen werden bevor er wieder geworfen werden kann 
+        magicOrbDamageTimer -= delta;
+        if (magicOrbDamageTimer <= 0f) {
+            magicOrbAttackId = ++attackId;
+            magicOrbDamageTimer = MAGIC_ORB_DAMAGE_INTERVAL;
+        }
+    }
+
+    private void resetMagicOrbPosition() {
+        magicOrbBounds.set(
+            bounds.x + bounds.width / 2f - MAGIC_ORB_SIZE / 2f,
+            bounds.y + bounds.height / 2f - MAGIC_ORB_SIZE / 2f,
+            MAGIC_ORB_SIZE,
+            MAGIC_ORB_SIZE
+        );
+    }
+
+    // TODO: more items 
+
 //"Ewiges Katana": desto länger man nicht angegriffen hat, desto mehr dmg macht man und desto mehr Range hat der Angriff
 //Zauberhut: man steuert mit den pfeiltasten nun eine magiekugel die Schaden macht  und man kann nicht mehr schlagen, magiekugel hat eine dmg Aura, somit muss man sie zu den Gegnern hinbewegen um diese zu dmgen
 //Garlic: kleine dmg aura welche Gegner in zeitintervallen dmg machen (ca alle 5 sec)

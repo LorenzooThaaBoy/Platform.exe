@@ -31,6 +31,19 @@ public class ControllerPLAYER {
             player.setGrounded(false);
         }
 
+        float magicOrbDirectionX = 0f;
+        float magicOrbDirectionY = 0f;
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) magicOrbDirectionX -= 1f;
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) magicOrbDirectionX += 1f;
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) magicOrbDirectionY -= 1f;
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) magicOrbDirectionY += 1f;
+        player.updatePrimaryItemInput(delta, magicOrbDirectionX, magicOrbDirectionY);
+
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT) {
+            moveAndCollide(player, map, delta);
+            return;
+        }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
             player.startAttack(0, 1);
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {

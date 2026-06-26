@@ -1,4 +1,4 @@
-package io.github.some_example_name; //TODO: Make a git release version + see how to make package/.jdk 
+package io.github.some_example_name; //TODO: Make a git release version + see how to make package/.jdk + fix the file path 
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -6,8 +6,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class ControllerENEMY {
-    private static final int BASE_ENEMIES_PER_WAVE = 0;
-    private static final int BASE_MAX_ENEMIES = 0;
+    private static final int BASE_ENEMIES_PER_WAVE = 2;
+    private static final int BASE_MAX_ENEMIES = 3;
+    private static final int EARLY_WAVE_ENEMY_MULTIPLIER = 3;
+    private static final int MID_WAVE_ENEMY_MULTIPLIER = 4;
+    private static final int LATE_WAVE_ENEMY_MULTIPLIER = 5;
+    private static final int MID_WAVE_START = 10;
+    private static final int LATE_WAVE_START = 20;
     private static final int BASE_ENEMY_SWORD_HITS = 1;
     private static final float BASE_ENEMY_SPEED = 95f;
     private static final float BASE_SPAWN_INTERVAL = 2.2f;
@@ -45,7 +50,7 @@ public class ControllerENEMY {
     }
 
     public int getEnemiesThisWave() {
-        return BASE_ENEMIES_PER_WAVE + getEnemyCountIncreases() * 2;
+        return getBaseEnemiesThisWave() * getWaveEnemyMultiplier();
     }
 
     public int getEnemyHitPoints() {
@@ -104,6 +109,13 @@ public class ControllerENEMY {
 
             if (player.isAttacking() && player.getAttackBounds().overlaps(enemy.getBounds())) { // enemy death logic
                 if (damageEnemy(enemy, player.getSwordDamage(), player.getAttackId(), player)) {
+                    enemies.removeIndex(i);
+                    continue;
+                }
+            }
+
+            if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT && player.getMagicOrbBounds().overlaps(enemy.getBounds())) {
+                if (damageEnemy(enemy, player.getMagicOrbDamage(), player.getMagicOrbAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
                 }
@@ -227,6 +239,16 @@ public class ControllerENEMY {
 
     private int getEnemyCountIncreases() {
         return (wave + 2) / 3;
+    }
+
+    private int getBaseEnemiesThisWave() {
+        return BASE_ENEMIES_PER_WAVE + getEnemyCountIncreases() * 2;
+    }
+
+    private int getWaveEnemyMultiplier() {
+        if (wave >= LATE_WAVE_START) return LATE_WAVE_ENEMY_MULTIPLIER;
+        if (wave >= MID_WAVE_START) return MID_WAVE_ENEMY_MULTIPLIER;
+        return EARLY_WAVE_ENEMY_MULTIPLIER;
     }
 
     private int getEnemySpeedIncreases() {

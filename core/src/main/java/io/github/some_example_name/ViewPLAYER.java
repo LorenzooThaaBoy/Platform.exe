@@ -34,7 +34,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
     private static final float TORSO_ROTATION = 0f;
     private static final float HEAD_ROTATION = 0f;
     private static final float SHOULDER_ROTATION = -90f;
-    private static final float UPPER_ARM_ROTATION = -90f; // will figure out later maby 
+    //private static final float UPPER_ARM_ROTATION = -90f; // will figure out later maby 
     private static final float LOWER_ARM_ROTATION = -90f;
     private static final float UPPER_LEG_ROTATION = 0f;
     private static final float LOWER_LEG_ROTATION = 0f;
@@ -156,6 +156,16 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
                 player.getDashBounds().y,
                 player.getDashBounds().width,
                 player.getDashBounds().height
+            );
+        }
+
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT) {
+            Rectangle magicOrbBounds = player.getMagicOrbBounds();
+            shapes.setColor(new Color(0.25f, 0.55f, 1f, 0.8f));
+            shapes.circle(
+                magicOrbBounds.x + magicOrbBounds.width / 2f,
+                magicOrbBounds.y + magicOrbBounds.height / 2f,
+                magicOrbBounds.width / 2f
             );
         }
 

@@ -345,12 +345,9 @@ public class ViewMain extends ApplicationAdapter {
     }
 
     private String getPrimaryItemLabel() {
-        switch (player.getPrimaryItem()) {
-            case NONE:
-                return "-";
-            default:
-                return "?";
-        }
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT) return "H";
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.NONE) return "-";
+        return "?";
     }
 
     private String getSecondaryItemLabel() {
