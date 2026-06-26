@@ -5,14 +5,16 @@ Platformer THE GAME is a small 2D arena platformer. The player moves across a co
 
 The current idea is to grow the game into round-based survival: enemies spawn from different sides of the map, chase the player, and deal damage on contact. After surviving rounds, the player should be able to enter a shop and buy upgrades such as more damage, more range, extra HP, more speed, or a dash.
 
+
+
 ## Development 
 ### Code Strucutre
 We deployed the MCV pattern for easy class overview aswell as it being industry standart for games. Easy debugging and a nice layer overwiev what makes it easy to adjust. The code for this project can be found in "core/src/main/java/io/github/some_example_name" (ik its bad, we'll fix it, probably)
 
-## Schedule 
+### Schedule 
 <img width="2233" height="590" alt="IMG_5907" src="https://github.com/user-attachments/assets/6c0f1f3e-f5ae-4d59-a047-0407990f730a" />
 
-## Work Distribution
+### Work Distribution
 <img width="1692" height="453" alt="IMG_5908" src="https://github.com/user-attachments/assets/3b5bf9e4-9bf4-4a26-9b5b-9b5c306f089d" />
 
 ## Usage of Artifical Intelligence 
@@ -21,6 +23,17 @@ We used OpenAi's Codex to write code in this project and help with sprite genera
 ## Technical Explanation of the game mechanics 
 
 ## Overview of the map from a developmetal standpoint 
+
+
+
+## Installation Guide
+### MacOs
+### Windows
+### Linux (if supported) 
+
+
+
+
 
 ## LibGDX Information 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
@@ -54,9 +67,3 @@ Useful Gradle tasks and flags:
 
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
-
-
-## Installation Guide
-### MacOs
-### Windows
-### Linux (if supported) 
