@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class ControllerENEMY {
-    private static final int BASE_ENEMIES_PER_WAVE = 2;
+    private static final int BASE_ENEMIES_PER_WAVE = 0;
     private static final int BASE_MAX_ENEMIES = 0;
     private static final int BASE_ENEMY_SWORD_HITS = 1;
     private static final float BASE_ENEMY_SPEED = 95f;

@@ -98,12 +98,14 @@ public class ModelPLAYER {
     }
 
     public Rectangle getAttackBounds() {
-        float attackWidth = attackDirectionY > 0 ? 30f : 38f;
-        float attackHeight = attackDirectionY > 0 ? 42f : 28f;
+        float attackProgress = 1f - attackTimer / ATTACK_DURATION;
+        float attackWidth = attackDirectionY > 0 ? 30f : 24f + attackProgress * 18f;
+        float attackHeight = attackDirectionY > 0 ? 42f : 22f + attackProgress * 14f;
+        float sideReach = 12f + attackProgress * 30f;
         float attackX = attackDirectionY > 0
             ? bounds.x + bounds.width / 2f - attackWidth / 2f
-            : attackDirectionX > 0 ? bounds.x + bounds.width : bounds.x - attackWidth;
-        float attackY = attackDirectionY > 0 ? bounds.y + bounds.height : bounds.y + 10f;
+            : attackDirectionX > 0 ? bounds.x + bounds.width + sideReach - attackWidth : bounds.x - sideReach;
+        float attackY = attackDirectionY > 0 ? bounds.y + bounds.height : bounds.y + 16f - attackProgress * 11f;
         return new Rectangle(attackX, attackY, attackWidth, attackHeight);
     }
 

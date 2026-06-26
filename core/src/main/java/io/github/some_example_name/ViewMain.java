@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class ViewMain extends ApplicationAdapter {
-    private static final Rectangle RESTART_BUTTON = new Rectangle(245f, 180f, 150f, 54f);
+    private static final Rectangle RESTART_BUTTON = new Rectangle(245f, 180f, 150f, 54f); //after death
     private static final Rectangle DEBUG_SHOP_BUTTON = new Rectangle(655f, 430f, 90f, 34f);
 
     private OrthographicCamera camera;
