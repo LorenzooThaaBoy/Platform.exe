@@ -344,10 +344,15 @@ public class ViewMain extends ApplicationAdapter {
         font.draw(batch, getSecondaryItemLabel(), SECONDARY_ITEM_SLOT.x + 8f, SECONDARY_ITEM_SLOT.y + 25f);
     }
 
-    private String getPrimaryItemLabel() {
-        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT) return "H";
-        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.NONE) return "-";
-        return "?";
+    private String getPrimaryItemLabel() { // placeholder till sprites are in place 
+        switch (player.getPrimaryItem()) {
+            case MAGIC_HAT: // dont care for now?? 
+                return "H";
+            case NONE:
+                return "-";
+            default:
+                return "?";
+        }
     }
 
     private String getSecondaryItemLabel() {
