@@ -55,7 +55,7 @@ java -version
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone <[repository-url](https://github.com/LorenzooThaaBoy/Platform.exe)>
 cd Platform.exe
 ```
 
