@@ -9,6 +9,7 @@ The current idea is to grow the game into round-based survival: enemies spawn fr
 
 ## Development 
 ### Code Strucutre
+
 We deployed the MCV pattern for easy class overview aswell as it being industry standart for games. Easy debugging and a nice layer overwiev what makes it easy to adjust. The code for this project can be found in "core/src/main/java/io/github/some_example_name" (ik its bad, we'll fix it, probably)
 
 ### Schedule 
