@@ -15,7 +15,7 @@ We deployed the MCV pattern for easy class overview aswell as it being industry 
 ## Work Distribution
 <img width="1692" height="453" alt="IMG_5908" src="https://github.com/user-attachments/assets/3b5bf9e4-9bf4-4a26-9b5b-9b5c306f089d" />
 
-### Usage of Artifical Intelligence 
+## Usage of Artifical Intelligence 
 We used OpenAi's Codex to write code in this project and help with sprite generation and in the general game development process
 
 ## Technical Explanation of the game mechanics 
