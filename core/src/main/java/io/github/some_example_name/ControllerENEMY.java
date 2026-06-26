@@ -80,7 +80,7 @@ public class ControllerENEMY {
         return lightningEffectY;
     }
 
-    public void update(ModelMAP map, ModelPLAYER player, float delta) {
+    public void update(ModelMAP map, ModelPLAYER player, ControllerPLAYER controllerPlayer, float delta) {
         if (waveComplete) return;
 
         lightningEffectTimer = Math.max(0f, lightningEffectTimer - delta);
@@ -104,6 +104,14 @@ public class ControllerENEMY {
 
             if (player.isAttacking() && player.getAttackBounds().overlaps(enemy.getBounds())) { // enemy death logic
                 if (damageEnemy(enemy, player.getSwordDamage(), player.getAttackId(), player)) {
+                    enemies.removeIndex(i);
+                    continue;
+                }
+            }
+
+            if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT
+                && controllerPlayer.getMagicOrbBounds().overlaps(enemy.getBounds())) {
+                if (damageEnemy(enemy, controllerPlayer.getMagicOrbDamage(player), controllerPlayer.getMagicOrbAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
                 }

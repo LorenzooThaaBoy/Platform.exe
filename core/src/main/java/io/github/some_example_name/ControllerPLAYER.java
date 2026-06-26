@@ -6,6 +6,27 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
 public class ControllerPLAYER {
+    private static final float MAGIC_ORB_SIZE = 18f;
+    private static final float MAGIC_ORB_BASE_SPEED = 185f;
+    private static final float MAGIC_ORB_BASE_DPS = 2f;
+    private static final float MAGIC_ORB_DAMAGE_INTERVAL = 0.25f;
+
+    private final Rectangle magicOrbBounds = new Rectangle();
+    private float magicOrbDamageTimer;
+    private int magicOrbAttackId = -100000;
+
+    public Rectangle getMagicOrbBounds() {
+        return magicOrbBounds;
+    }
+
+    public float getMagicOrbDamage(ModelPLAYER player) {
+        return MAGIC_ORB_BASE_DPS * MAGIC_ORB_DAMAGE_INTERVAL * player.getSwordDamage();
+    }
+
+    public int getMagicOrbAttackId() {
+        return magicOrbAttackId;
+    }
+
     public void update(ModelPLAYER player, ModelMAP map, float delta) {
         player.updateTimers(delta);
 
@@ -37,7 +58,7 @@ public class ControllerPLAYER {
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) magicOrbDirectionX += 1f;
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) magicOrbDirectionY -= 1f;
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) magicOrbDirectionY += 1f;
-        player.updatePrimaryItemInput(delta, magicOrbDirectionX, magicOrbDirectionY);
+        updateMagicOrb(player, magicOrbDirectionX, magicOrbDirectionY, delta);
 
         if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT) {
             moveAndCollide(player, map, delta);
@@ -88,5 +109,43 @@ public class ControllerPLAYER {
             player.getVelocity().y = 0f;
             player.setGrounded(true);
         }
+    }
+
+    private void updateMagicOrb(ModelPLAYER player, float directionX, float directionY, float delta) {
+        if (player.getPrimaryItem() != ModelPLAYER.PrimaryItem.MAGIC_HAT) {
+            magicOrbBounds.set(0f, 0f, 0f, 0f);
+            return;
+        }
+
+        if (magicOrbBounds.width <= 0f) {
+            resetMagicOrbPosition(player);
+        }
+
+        magicOrbDamageTimer -= delta;
+        if (magicOrbDamageTimer <= 0f) {
+            magicOrbAttackId--;
+            magicOrbDamageTimer = MAGIC_ORB_DAMAGE_INTERVAL;
+        }
+
+        float lengthSquared = directionX * directionX + directionY * directionY;
+        if (lengthSquared > 0f) {
+            float length = (float)Math.sqrt(lengthSquared);
+            float speed = MAGIC_ORB_BASE_SPEED * player.getMoveSpeed() / ModelPLAYER.MOVE_SPEED;
+            magicOrbBounds.x += directionX / length * speed * delta;
+            magicOrbBounds.y += directionY / length * speed * delta;
+        }
+
+        magicOrbBounds.x = MathUtils.clamp(magicOrbBounds.x, 0f, ModelMAP.WORLD_WIDTH - magicOrbBounds.width);
+        magicOrbBounds.y = MathUtils.clamp(magicOrbBounds.y, ModelMAP.GROUND_Y, ModelMAP.WORLD_HEIGHT - magicOrbBounds.height);
+    }
+
+    private void resetMagicOrbPosition(ModelPLAYER player) {
+        Rectangle playerBounds = player.getBounds();
+        magicOrbBounds.set(
+            playerBounds.x + playerBounds.width / 2f - MAGIC_ORB_SIZE / 2f,
+            playerBounds.y + playerBounds.height / 2f - MAGIC_ORB_SIZE / 2f,
+            MAGIC_ORB_SIZE,
+            MAGIC_ORB_SIZE
+        );
     }
 }

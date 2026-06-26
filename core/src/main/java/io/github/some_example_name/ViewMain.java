@@ -101,7 +101,7 @@ public class ViewMain extends ApplicationAdapter {
             }
 
             controllerPlayer.update(player, map, delta);
-            controllerEnemy.update(map, player, delta);
+            controllerEnemy.update(map, player, controllerPlayer, delta);
 
             if (player.getLives() <= 0) {
                 gameState = GameState.GAME_OVER;
@@ -154,6 +154,7 @@ public class ViewMain extends ApplicationAdapter {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             shapes.begin(ShapeRenderer.ShapeType.Filled);
             viewPlayer.renderHitboxes(shapes, player);
+            renderMagicOrb();
             if (gameState == GameState.PLAYING) {
                 renderDebugShopButton();
             }
@@ -328,6 +329,20 @@ public class ViewMain extends ApplicationAdapter {
         }
     }
 
+    private void renderMagicOrb() {
+        if (player.getPrimaryItem() != ModelPLAYER.PrimaryItem.MAGIC_HAT) return;
+
+        Rectangle magicOrbBounds = controllerPlayer.getMagicOrbBounds();
+        if (magicOrbBounds.width <= 0f) return;
+
+        shapes.setColor(new Color(0.25f, 0.55f, 1f, 0.8f));
+        shapes.circle(
+            magicOrbBounds.x + magicOrbBounds.width / 2f,
+            magicOrbBounds.y + magicOrbBounds.height / 2f,
+            magicOrbBounds.width / 2f
+        );
+    }
+
     private boolean shouldRenderItemSlots() {
         return gameState == GameState.PLAYING || gameState == GameState.PAUSED;
     }
@@ -345,14 +360,9 @@ public class ViewMain extends ApplicationAdapter {
     }
 
     private String getPrimaryItemLabel() { // placeholder till sprites are in place 
-        switch (player.getPrimaryItem()) {
-            case MAGIC_HAT: // dont care for now?? 
-                return "H";
-            case NONE:
-                return "-";
-            default:
-                return "?";
-        }
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT) return "H";
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.NONE) return "-";
+        return "?";
     }
 
     private String getSecondaryItemLabel() {

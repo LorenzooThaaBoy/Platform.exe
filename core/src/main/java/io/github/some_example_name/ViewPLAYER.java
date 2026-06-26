@@ -159,16 +159,6 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
             );
         }
 
-        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT) {
-            Rectangle magicOrbBounds = player.getMagicOrbBounds();
-            shapes.setColor(new Color(0.25f, 0.55f, 1f, 0.8f));
-            shapes.circle(
-                magicOrbBounds.x + magicOrbBounds.width / 2f,
-                magicOrbBounds.y + magicOrbBounds.height / 2f,
-                magicOrbBounds.width / 2f
-            );
-        }
-
         if (player.isBrimstoneBeamActive()) {
             Rectangle brimstoneBeamBounds = player.getBrimstoneBeamBounds();
             shapes.setColor(new Color(1f, 0.28f, 0.05f, 0.65f));
@@ -373,7 +363,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         addFittedSlot(data, skin, index, name, bone, region, x, y, targetLength, rotation, 1f, 1f, r, g, b, a);
     }
 
-    private void addFittedSlot(
+    private void addFittedSlot( // cant this be commented out ???
         SkeletonData data,
         Skin skin,
         int index,
