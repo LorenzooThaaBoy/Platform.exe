@@ -18,7 +18,12 @@ public class ControllerPLAYER {
         }
 
         player.setFacingFromMovement(movement);
-        player.getVelocity().x = movement * ModelPLAYER.MOVE_SPEED;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)) {
+            player.startDash();
+        }
+        player.updateSecondaryItemInput(delta, Gdx.input.isKeyJustPressed(Input.Keys.C), Gdx.input.isKeyPressed(Input.Keys.C));
+
+        player.getVelocity().x = player.isDashing() ? player.getFacing() * player.getDashSpeed() : movement * player.getMoveSpeed();
 
         if ((Gdx.input.isKeyJustPressed(Input.Keys.W) //foward
             || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && player.isGrounded()) { //jump

@@ -1,5 +1,7 @@
 package io.github.some_example_name; //TODO: Make a git release version + see how to make package/.jdk 
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
@@ -9,16 +11,29 @@ public class ControllerENEMY {
     private static final int BASE_ENEMY_SWORD_HITS = 1;
     private static final float BASE_ENEMY_SPEED = 95f;
     private static final float BASE_SPAWN_INTERVAL = 2.2f;
+    private static final int SCATTER_PROJECTILE_COUNT = 14;
+    private static final float SCATTER_PROJECTILE_SPEED = 260f;
+    private static final float SCATTER_PROJECTILE_DAMAGE = 0.75f;
+    private static final float LIGHTNING_EFFECT_DURATION = 0.18f;
 
     private final Array<ModelENEMY> enemies = new Array<>();
+    private final Array<ModelPROJECTILE> projectiles = new Array<>();
     private float spawnTimer;
+    private float lightningEffectTimer;
+    private float lightningEffectX;
+    private float lightningEffectY;
     private int nextSpawnPoint;
+    private int effectAttackId;
     private int wave = 1;
     private int spawnedThisWave;
     private boolean waveComplete;
 
     public Array<ModelENEMY> getEnemies() {
         return enemies;
+    }
+
+    public Array<ModelPROJECTILE> getProjectiles() {
+        return projectiles;
     }
 
     public int getWave() {
@@ -53,14 +68,30 @@ public class ControllerENEMY {
         return wave > 0 && wave % 3 == 0;
     }
 
+    public boolean isLightningEffectActive() {
+        return lightningEffectTimer > 0f;
+    }
+
+    public float getLightningEffectX() {
+        return lightningEffectX;
+    }
+
+    public float getLightningEffectY() {
+        return lightningEffectY;
+    }
+
     public void update(ModelMAP map, ModelPLAYER player, float delta) {
         if (waveComplete) return;
 
+        lightningEffectTimer = Math.max(0f, lightningEffectTimer - delta);
         spawnTimer -= delta;
         if (spawnTimer <= 0f && spawnedThisWave < getEnemiesThisWave() && enemies.size < getMaxEnemiesAlive()) {
             spawnEnemy(map);
             spawnTimer = getSpawnInterval();
         }
+
+        updateProjectiles(delta, player);
+        updateLightning(player);
 
         for (int i = enemies.size - 1; i >= 0; i--) { //enemy death
             ModelENEMY enemy = enemies.get(i);
@@ -72,14 +103,28 @@ public class ControllerENEMY {
             enemy.updateTowards(player.getBounds(), delta); 
 
             if (player.isAttacking() && player.getAttackBounds().overlaps(enemy.getBounds())) { // enemy death logic
-                enemy.takeDamage(player.getSwordDamage(), player.getAttackId());
-                if (!enemy.isAlive()) {
+                if (damageEnemy(enemy, player.getSwordDamage(), player.getAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
                 }
             }
 
-            if (enemy.getBounds().overlaps(player.getBounds())) {
+            if (player.isDashing() && player.getDashBounds().overlaps(enemy.getBounds())) {
+                if (damageEnemy(enemy, player.getDashDamage(), player.getDashAttackId(), player)) {
+                    enemies.removeIndex(i);
+                    continue;
+                }
+            }
+
+            Rectangle brimstoneBeamBounds = player.getBrimstoneBeamBounds();
+            if (player.isBrimstoneBeamActive() && brimstoneBeamBounds.overlaps(enemy.getBounds())) {
+                if (damageEnemy(enemy, player.getBrimstoneDamage(), player.getBrimstoneAttackId(), player)) {
+                    enemies.removeIndex(i);
+                    continue;
+                }
+            }
+
+            if (!player.isDashing() && enemy.getBounds().overlaps(player.getBounds())) {
                 player.takeDamage();
             }
         }
@@ -89,8 +134,11 @@ public class ControllerENEMY {
 
     public void reset() {
         enemies.clear();
+        projectiles.clear();
         spawnTimer = 0f;
+        lightningEffectTimer = 0f;
         nextSpawnPoint = 0;
+        effectAttackId = 0;
         wave = 1;
         spawnedThisWave = 0;
         waveComplete = false;
@@ -99,9 +147,73 @@ public class ControllerENEMY {
     public void startNextWave() {
         wave++;
         enemies.clear();
+        projectiles.clear();
         spawnTimer = 0f;
+        lightningEffectTimer = 0f;
         spawnedThisWave = 0;
         waveComplete = false;
+    }
+
+    private void updateProjectiles(float delta, ModelPLAYER player) {
+        for (int i = projectiles.size - 1; i >= 0; i--) {
+            ModelPROJECTILE projectile = projectiles.get(i);
+            projectile.update(delta);
+            if (!projectile.isAlive()) {
+                projectiles.removeIndex(i);
+                continue;
+            }
+
+            for (int j = enemies.size - 1; j >= 0; j--) {
+                ModelENEMY enemy = enemies.get(j);
+                if (!projectile.getBounds().overlaps(enemy.getBounds())) continue;
+
+                if (damageEnemy(enemy, SCATTER_PROJECTILE_DAMAGE, projectile.getAttackId(), player)) {
+                    enemies.removeIndex(j);
+                }
+            }
+        }
+    }
+
+    private void updateLightning(ModelPLAYER player) {
+        if (!player.isLightningRequested() || enemies.size == 0) return;
+
+        int enemyIndex = MathUtils.random(enemies.size - 1);
+        ModelENEMY enemy = enemies.get(enemyIndex);
+        Rectangle bounds = enemy.getBounds();
+        lightningEffectX = bounds.x + bounds.width / 2f;
+        lightningEffectY = bounds.y + bounds.height / 2f;
+        lightningEffectTimer = LIGHTNING_EFFECT_DURATION;
+
+        if (damageEnemy(enemy, player.getLightningDamage(), player.getLightningAttackId(), player)) {
+            enemies.removeIndex(enemyIndex);
+        }
+    }
+
+    private boolean damageEnemy(ModelENEMY enemy, float damage, int attackId, ModelPLAYER player) {
+        enemy.takeDamage(damage, attackId);
+        if (!enemy.isAlive()) {
+            spawnScatter(enemy, player);
+            return true;
+        }
+        return false;
+    }
+
+    private void spawnScatter(ModelENEMY enemy, ModelPLAYER player) {
+        if (!player.hasScatter()) return;
+
+        Rectangle bounds = enemy.getBounds();
+        float centerX = bounds.x + bounds.width / 2f;
+        float centerY = bounds.y + bounds.height / 2f;
+        for (int i = 0; i < SCATTER_PROJECTILE_COUNT; i++) {
+            float angle = MathUtils.PI2 * i / SCATTER_PROJECTILE_COUNT;
+            projectiles.add(new ModelPROJECTILE(
+                centerX,
+                centerY,
+                MathUtils.cos(angle) * SCATTER_PROJECTILE_SPEED,
+                MathUtils.sin(angle) * SCATTER_PROJECTILE_SPEED,
+                ++effectAttackId
+            ));
+        }
     }
 
     private void spawnEnemy(ModelMAP map) {

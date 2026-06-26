@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.esotericsoftware.spine.Bone;
 import com.esotericsoftware.spine.BoneData;
 import com.esotericsoftware.spine.Skeleton;
@@ -33,14 +34,14 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
     private static final float TORSO_ROTATION = 0f;
     private static final float HEAD_ROTATION = 0f;
     private static final float SHOULDER_ROTATION = -90f;
-    private static final float UPPER_ARM_ROTATION = -90f;
+    private static final float UPPER_ARM_ROTATION = -90f; // will figure out later maby 
     private static final float LOWER_ARM_ROTATION = -90f;
     private static final float UPPER_LEG_ROTATION = 0f;
     private static final float LOWER_LEG_ROTATION = 0f;
     private static final float SWORD_ROTATION = 45f;
     private static final float ATTACK_ANIMATION_DURATION = 0.32f;
     private static final float FRONT_UPPER_ARM_READY_ROTATION = 40f;
-    private static final float FRONT_FOREARM_READY_ROTATION = 190f;
+    private static final float FRONT_FOREARM_READY_ROTATION = 0f;
     private static final float SWORD_READY_ROTATION = 38f;
     private static final float DEBUG_UPPER_ARM_BAR_THICKNESS = 3f;
     private static final float DEBUG_JOINT_DOT_SIZE = 3.5f;
@@ -147,6 +148,27 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
                 player.getAttackBounds().height
             );
         }
+
+        if (player.isDashing()) {
+            shapes.setColor(new Color(0.45f, 0.9f, 1f, 0.45f));
+            shapes.rect(
+                player.getDashBounds().x,
+                player.getDashBounds().y,
+                player.getDashBounds().width,
+                player.getDashBounds().height
+            );
+        }
+
+        if (player.isBrimstoneBeamActive()) {
+            Rectangle brimstoneBeamBounds = player.getBrimstoneBeamBounds();
+            shapes.setColor(new Color(1f, 0.28f, 0.05f, 0.65f));
+            shapes.rect(
+                brimstoneBeamBounds.x,
+                brimstoneBeamBounds.y,
+                brimstoneBeamBounds.width,
+                brimstoneBeamBounds.height
+            );
+        }
     }
 
     public void dispose() {
@@ -209,9 +231,9 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
                 sword.setRotation(-45f);
                 torso.setRotation(torso.getRotation() - 5f);
             } else {
-                frontUpperArm.setRotation(FRONT_UPPER_ARM_READY_ROTATION - swing * 46f);
-                frontForearm.setRotation(FRONT_FOREARM_READY_ROTATION - swing * 220f);
-                sword.setRotation(SWORD_READY_ROTATION - swing * 108f);
+                frontUpperArm.setRotation(FRONT_UPPER_ARM_READY_ROTATION + swing * 46f);
+                frontForearm.setRotation(FRONT_FOREARM_READY_ROTATION + swing * 220f);
+                sword.setRotation(SWORD_READY_ROTATION + swing * 108f);
                 torso.setRotation(torso.getRotation() - 4f + swing * 8f);
             }
         }
@@ -251,7 +273,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         addDebugBoneBar(data, skin, 9, "front-upper-arm-debug", frontUpperArmData, UPPER_ARM_LENGTH);
         addFittedSlot(data, skin, 10, "front-forearm", frontForearmData, lowerArmRegion, -4f, -1f, LOWER_ARM_LENGTH, LOWER_ARM_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 11, "front-shoulder", frontUpperArmData, shoulderRegion, -1f, 0f, SHOULDER_LENGTH, SHOULDER_ROTATION, SHOULDER_SCALE_X, SHOULDER_SCALE_Y, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 12, "sword", swordData, swordRegion, -5f, 10f, SWORD_LENGTH+2, SWORD_ROTATION, 1f, 1f, 1f, 1f);
+        addFittedSlot(data, skin, 12, "sword", swordData, swordRegion, 0f, 8f, SWORD_LENGTH+2, SWORD_ROTATION+220, 1f, 1f, 1f, 1f);
 
         addDebugJointDot(data, skin, 13, "debug-root-joint", rootData); //to know where joints are to match sprite lenght and position to the joints 
         addDebugJointDot(data, skin, 14, "debug-torso-joint", torsoData);

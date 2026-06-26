@@ -31,14 +31,14 @@ public class ViewSHOP {
         }
     }
 
-    public void renderText(SpriteBatch batch, BitmapFont font, ModelSHOP shop, int nextWave) {
+    public void renderText(SpriteBatch batch, BitmapFont font, ModelSHOP shop, ModelPLAYER player, int nextWave) {
         font.draw(batch, "SHOP", 365f, 390f);
         font.draw(batch, "Wave " + nextWave + " starts after you leave", 280f, 365f);
 
         for (int i = 0; i < shop.getItems().length; i++) {
             float x = FIRST_CARD_X + i * (CARD_WIDTH + CARD_GAP);
-            font.draw(batch, shop.getItems()[i], x + 52f, CARD_Y + 58f);
-            font.draw(batch, "Placeholder", x + 35f, CARD_Y + 36f);
+            font.draw(batch, shop.getItemName(i), x + 32f, CARD_Y + 58f);
+            font.draw(batch, shop.getItemDescription(i, player), x + 18f, CARD_Y + 36f);
         }
 
         if (shop.isItemSelected()) {

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 public class ControllerSHOP {
-    public boolean update(ModelSHOP shop) {
+    public boolean update(ModelSHOP shop, ModelPLAYER player) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.A) || Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
             shop.selectPrevious();
         }
@@ -18,6 +18,7 @@ public class ControllerSHOP {
                 return true;
             }
 
+            shop.applySelectedItem(player);
             shop.selectItem();
         }
 

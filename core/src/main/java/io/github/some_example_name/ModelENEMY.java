@@ -10,7 +10,7 @@ public class ModelENEMY {
     private final Vector2 velocity = new Vector2();
     private boolean alive = true;
     private final float speed;
-    private int hitPoints;
+    private float hitPoints;
     private int lastHitAttackId = -1;
 
     public ModelENEMY(float x, float y, int hitPoints, float speed) {
@@ -31,7 +31,7 @@ public class ModelENEMY {
         return alive;
     }
 
-    public int getHitPoints() {
+    public float getHitPoints() {
         return hitPoints;
     }
 
@@ -39,7 +39,7 @@ public class ModelENEMY {
         alive = false;
     }
 
-    public void takeDamage(int damage, int attackId) {
+    public void takeDamage(float damage, int attackId) {
         if (lastHitAttackId == attackId) return;
 
         lastHitAttackId = attackId;

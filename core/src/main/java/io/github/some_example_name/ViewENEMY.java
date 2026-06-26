@@ -23,6 +23,21 @@ public class ViewENEMY {
                 enemy.getBounds().width / 2f
             );
         }
+
+        shapes.setColor(new Color(1f, 0.86f, 0.22f, 1f));
+        for (ModelPROJECTILE projectile : controllerEnemy.getProjectiles()) {
+            shapes.circle(
+                projectile.getBounds().x + projectile.getBounds().width / 2f,
+                projectile.getBounds().y + projectile.getBounds().height / 2f,
+                projectile.getBounds().width / 2f
+            );
+        }
+
+        if (controllerEnemy.isLightningEffectActive()) {
+            shapes.setColor(new Color(0.45f, 0.9f, 1f, 0.85f));
+            shapes.rect(controllerEnemy.getLightningEffectX() - 4f, controllerEnemy.getLightningEffectY(), 8f, ModelMAP.WORLD_HEIGHT - controllerEnemy.getLightningEffectY());
+            shapes.circle(controllerEnemy.getLightningEffectX(), controllerEnemy.getLightningEffectY(), 20f);
+        }
     }
 
     public void renderSprites(SpriteBatch batch, ControllerENEMY controllerEnemy) {
