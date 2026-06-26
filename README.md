@@ -22,18 +22,21 @@ We deployed the MCV pattern for easy class overview aswell as it being industry 
 We used OpenAi's Codex to write code in this project and help with sprite generation and in the general game development process
 
 ## Technical Explanation of the game mechanics 
+bla
+bla
 
 ## Overview of the map from a developmetal standpoint 
-
-
+bla
+bla
 
 ## Installation Guide
 ### MacOs
+bla
+bla 
+
 ### Windows
-### Linux (if supported) 
-
-
-
+bla bla
+bla 
 
 
 ## LibGDX Information 
