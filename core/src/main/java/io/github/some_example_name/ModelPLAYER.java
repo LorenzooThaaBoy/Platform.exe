@@ -375,11 +375,6 @@ public class ModelPLAYER {
         if (canUpgradeDash()) dashLevel++;
     }
 
-    public void equipPrimaryItem(PrimaryItem primaryItem) {
-        this.primaryItem = primaryItem;
-        attackTimer = 0f;
-    }
-
     public void equipSecondaryItem(SecondaryItem secondaryItem) {
         this.secondaryItem = secondaryItem;
         lightningRequested = false;
@@ -430,9 +425,5 @@ public class ModelPLAYER {
         brimstoneCooldownTimer = SECONDARY_ABILITY_COOLDOWN;
         brimstoneAttackId = ++attackId;
     }
-
-    // TODO: more items 
-
-//Garlic: kleine dmg aura welche Gegner in zeitintervallen dmg machen (ca alle 5 sec)
 
 }

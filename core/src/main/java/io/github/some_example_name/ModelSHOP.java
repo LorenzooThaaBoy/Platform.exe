@@ -116,7 +116,7 @@ public class ModelSHOP {
         itemSelected = true;
     }
 
-    public void applySelectedItem(ModelPLAYER player) {
+    public void applySelectedItem(ModelPLAYER player) { // BAAADDDDD DSWICTH STATMENTSSSSSS
         switch (items[selectedIndex]) {
             case DAMAGE_UP:
                 player.upgradeDamage();
