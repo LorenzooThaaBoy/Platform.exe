@@ -22,8 +22,8 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
     private static final float TORSO_LENGTH = 34f;
     private static final float HEAD_LENGTH = 16f;
     private static final float SHOULDER_LENGTH = 15f;
-    private static final float SHOULDER_SCALE_X = 1.25f;
-    private static final float SHOULDER_SCALE_Y = 1.25f;
+    private static final float SHOULDER_SCALE_X = 2f;
+    private static final float SHOULDER_SCALE_Y = 2f;
     private static final float UPPER_ARM_LENGTH = 20f;
     private static final float LOWER_ARM_LENGTH = 20f;
     private static final float ARM_FORWARD = -1f;
@@ -35,7 +35,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
     private static final float HEAD_ROTATION = 0f;
     private static final float SHOULDER_ROTATION = -90f;
     //private static final float UPPER_ARM_ROTATION = -90f; // will figure out later maby 
-    private static final float LOWER_ARM_ROTATION = -90f;
+    private static final float LOWER_ARM_ROTATION = -180f;
     private static final float UPPER_LEG_ROTATION = 0f;
     private static final float LOWER_LEG_ROTATION = 0f;
     private static final float SWORD_ROTATION = 45f;
@@ -232,8 +232,8 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
                 torso.setRotation(torso.getRotation() - 5f);
             } else {
                 frontUpperArm.setRotation(FRONT_UPPER_ARM_READY_ROTATION + swing * 46f);
-                frontForearm.setRotation(FRONT_FOREARM_READY_ROTATION + swing * 220f);
-                sword.setRotation(SWORD_READY_ROTATION + swing * 108f);
+                frontForearm.setRotation(FRONT_FOREARM_READY_ROTATION + swing * 50f);
+                sword.setRotation(SWORD_READY_ROTATION + swing * 45f);
                 torso.setRotation(torso.getRotation() - 4f + swing * 8f);
             }
         }
@@ -263,17 +263,17 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         Skin skin = new Skin("default");
         addDebugBoneBar(data, skin, 0, "back-upper-arm-debug", backUpperArmData, UPPER_ARM_LENGTH);
         addFittedSlot(data, skin, 1, "back-forearm", backForearmData, lowerArmRegion, -4f, -1f, LOWER_ARM_LENGTH, LOWER_ARM_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 2, "back-shoulder", backUpperArmData, shoulderRegion, 2f, 0f, SHOULDER_LENGTH, SHOULDER_ROTATION, SHOULDER_SCALE_X, SHOULDER_SCALE_Y, 1f, 1f, 1f, 1f);
+        addFittedSlot(data, skin, 2, "back-shoulder", backUpperArmData, shoulderRegion, -12f, 2f, SHOULDER_LENGTH, SHOULDER_ROTATION, SHOULDER_SCALE_X, SHOULDER_SCALE_Y, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 3, "back-upper-leg", backUpperLegData, upperLegRegion, 0f, -8f, UPPER_LEG_LENGTH, UPPER_LEG_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 4, "back-lower-leg", backLowerLegData, lowerLegRegion, 0f, -9f, LOWER_LEG_LENGTH, LOWER_LEG_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 5, "torso", torsoData, torsoRegion, -2f, 10f, TORSO_LENGTH, TORSO_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 6, "head", headData, headRegion, 0f, 7f, HEAD_LENGTH, HEAD_ROTATION, 1f, 1f, 1f, 1f);
+        addFittedSlot(data, skin, 6, "head", headData, headRegion, -4f, 4f, HEAD_LENGTH, HEAD_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 7, "front-upper-leg", frontUpperLegData, upperLegRegion, 0f, -8f, UPPER_LEG_LENGTH, UPPER_LEG_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 8, "front-lower-leg", frontLowerLegData, lowerLegRegion, 0f, -9f, LOWER_LEG_LENGTH, LOWER_LEG_ROTATION, 1f, 1f, 1f, 1f);
         addDebugBoneBar(data, skin, 9, "front-upper-arm-debug", frontUpperArmData, UPPER_ARM_LENGTH);
-        addFittedSlot(data, skin, 10, "front-forearm", frontForearmData, lowerArmRegion, -4f, -1f, LOWER_ARM_LENGTH, LOWER_ARM_ROTATION, 1f, 1f, 1f, 1f);
+        addFittedSlot(data, skin, 10, "front-forearm", frontForearmData, lowerArmRegion, -4f, 4f, LOWER_ARM_LENGTH, LOWER_ARM_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 11, "front-shoulder", frontUpperArmData, shoulderRegion, -1f, 0f, SHOULDER_LENGTH, SHOULDER_ROTATION, SHOULDER_SCALE_X, SHOULDER_SCALE_Y, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 12, "sword", swordData, swordRegion, 0f, 8f, SWORD_LENGTH+2, SWORD_ROTATION+220, 1f, 1f, 1f, 1f);
+        addFittedSlot(data, skin, 12, "sword", swordData, swordRegion, 18f, -2f, SWORD_LENGTH+5, SWORD_ROTATION+225, 1f, 1f, 1f, 1f);
 
         addDebugJointDot(data, skin, 13, "debug-root-joint", rootData); //to know where joints are to match sprite lenght and position to the joints 
         addDebugJointDot(data, skin, 14, "debug-torso-joint", torsoData);

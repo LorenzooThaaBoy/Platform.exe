@@ -375,6 +375,11 @@ public class ModelPLAYER {
         if (canUpgradeDash()) dashLevel++;
     }
 
+    public void equipPrimaryItem(PrimaryItem primaryItem) {
+        this.primaryItem = primaryItem;
+        attackTimer = 0f;
+    }
+
     public void equipSecondaryItem(SecondaryItem secondaryItem) {
         this.secondaryItem = secondaryItem;
         lightningRequested = false;
