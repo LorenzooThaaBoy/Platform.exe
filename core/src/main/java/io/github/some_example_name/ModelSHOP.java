@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 public class ModelSHOP {
     private static final int SHOP_SLOT_COUNT = 3;
 
-    public enum Item {
+    public enum Item { // all da items cash money
         DAMAGE_UP,
         RANGE_UP,
         HP_UP,
@@ -48,7 +48,7 @@ public class ModelSHOP {
         return getItemName(selectedIndex);
     }
 
-    public String getItemName(int index) {
+    public String getItemName(int index) { //item names 
         switch (items[index]) {
             case DAMAGE_UP:
                 return "Damage Up";
@@ -73,7 +73,7 @@ public class ModelSHOP {
         }
     }
 
-    public String getItemDescription(int index, ModelPLAYER player) {
+    public String getItemDescription(int index, ModelPLAYER player) { //player advice for items 
         switch (items[index]) {
             case DAMAGE_UP:
                 return player.canUpgradeDamage() ? "x" + player.getNextDamageMultiplier() + " dmg" : "Max dmg";

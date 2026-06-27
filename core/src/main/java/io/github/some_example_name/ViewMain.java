@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class ViewMain extends ApplicationAdapter {
+public class ViewMain extends ApplicationAdapter { // main game loop and rendering logic, handles input and game state transitions
     private static final Rectangle RESTART_BUTTON = new Rectangle(245f, 180f, 150f, 54f); //after death
     private static final Rectangle DEBUG_SHOP_BUTTON = new Rectangle(655f, 430f, 90f, 34f);
     private static final Rectangle CONTINUE_BUTTON = new Rectangle(300f, 235f, 200f, 54f);
@@ -87,7 +87,7 @@ public class ViewMain extends ApplicationAdapter {
         renderGame(delta);
     }
 
-    private void updateInput(float delta) {
+    private void updateInput(float delta) { // handles input 
         if (gameState == GameState.PLAYING) {
             transitionTimer = Math.max(0f, transitionTimer - delta);
             if (pauseRequested()) {
@@ -104,7 +104,7 @@ public class ViewMain extends ApplicationAdapter {
             controllerEnemy.update(map, player, controllerPlayer, delta);
 
             if (player.getLives() <= 0) {
-                gameState = GameState.GAME_OVER;
+                gameState = GameState.GAME_OVER; // coud all of this be written better? like a state machine or something?
             } else if (controllerEnemy.isWaveComplete()) {
                 if (controllerEnemy.shouldOpenShop()) {
                     openShop();
@@ -126,7 +126,7 @@ public class ViewMain extends ApplicationAdapter {
         }
     }
 
-    private void renderGame(float delta) {
+    private void renderGame(float delta) { //render everything 
         if (gameState == GameState.SHOP) {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -204,7 +204,7 @@ public class ViewMain extends ApplicationAdapter {
         gameState = GameState.PLAYING;
     }
 
-    private void openShop() {
+    private void openShop() { // open shop 
         shop.resetForShop();
         gameState = GameState.SHOP;
         transitionTimer = 0.45f;
@@ -216,14 +216,14 @@ public class ViewMain extends ApplicationAdapter {
         }
     }
 
-    private void renderGameOverOverlay() {
+    private void renderGameOverOverlay() { //render overlay for game over
         shapes.setColor(0f, 0f, 0f, 0.55f);
         shapes.rect(0f, 0f, ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT);
         shapes.setColor(0.9f, 0.2f, 0.25f, 1f);
         shapes.rect(RESTART_BUTTON.x, RESTART_BUTTON.y, RESTART_BUTTON.width, RESTART_BUTTON.height);
     }
 
-    private void renderPauseOverlay() {
+    private void renderPauseOverlay() { //pause menu overlay
         shapes.setColor(0f, 0f, 0f, 0.6f);
         shapes.rect(0f, 0f, ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT);
 
@@ -234,21 +234,21 @@ public class ViewMain extends ApplicationAdapter {
         shapes.rect(LEAVE_GAME_BUTTON.x, LEAVE_GAME_BUTTON.y, LEAVE_GAME_BUTTON.width, LEAVE_GAME_BUTTON.height);
     }
 
-    private boolean restartRequested() {
+    private boolean restartRequested() { //restart 
         if (Gdx.input.isKeyJustPressed(Input.Keys.R)) return true;
         if (!Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) return false;
 
         return RESTART_BUTTON.contains(getWorldClick());
     }
 
-    private boolean debugShopRequested() {
+    private boolean debugShopRequested() { //just for debbugging, REMOVE !!!
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) return true;
         if (!Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) return false;
 
         return DEBUG_SHOP_BUTTON.contains(getWorldClick());
     }
 
-    private boolean pauseRequested() {
+    private boolean pauseRequested() { //pause 
         return Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE);
     }
 
@@ -272,7 +272,7 @@ public class ViewMain extends ApplicationAdapter {
         return viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
     }
 
-    private void renderText() {
+    private void renderText() { // all the text bein rendered 
         font.draw(batch, "Lives: " + player.getLives() + "/" + player.getMaxLives(), 16f, ModelMAP.WORLD_HEIGHT - 38f);
         font.draw(batch, "Wave: " + controllerEnemy.getWave() + "  Enemies: " + controllerEnemy.getSpawnedThisWave() + "/" + controllerEnemy.getEnemiesThisWave(), 16f, ModelMAP.WORLD_HEIGHT - 58f);
         font.draw(batch, "Enemy hits: " + controllerEnemy.getEnemyHitPoints() + "  Health scale: +" + controllerEnemy.getEnemyHealthIncreases() + "  Speed: " + (int)controllerEnemy.getEnemySpeed(), 16f, ModelMAP.WORLD_HEIGHT - 78f);
@@ -307,7 +307,7 @@ public class ViewMain extends ApplicationAdapter {
         shapes.rect(0f, 0f, ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT);
     }
 
-    private void renderDebugShopButton() {
+    private void renderDebugShopButton() { //REMOVE!!
         shapes.setColor(0.12f, 0.1f, 0.18f, 0.75f);
         shapes.rect(DEBUG_SHOP_BUTTON.x, DEBUG_SHOP_BUTTON.y, DEBUG_SHOP_BUTTON.width, DEBUG_SHOP_BUTTON.height);
         shapes.setColor(0.95f, 0.78f, 0.25f, 1f);
@@ -329,7 +329,7 @@ public class ViewMain extends ApplicationAdapter {
         }
     }
 
-    private void renderMagicOrb() {
+    private void renderMagicOrb() { //the orb 
         if (player.getPrimaryItem() != ModelPLAYER.PrimaryItem.MAGIC_HAT) return;
 
         Rectangle magicOrbBounds = controllerPlayer.getMagicOrbBounds();

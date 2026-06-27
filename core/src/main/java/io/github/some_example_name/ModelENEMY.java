@@ -3,7 +3,7 @@ package io.github.some_example_name;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class ModelENEMY {
+public class ModelENEMY { //enemy logic and parameters
     public static final float SIZE = 28f;
 
     private final Rectangle bounds;

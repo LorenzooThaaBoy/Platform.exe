@@ -38,7 +38,7 @@ public class ControllerPLAYER {
             movement += 1f;
         }
 
-        player.setFacingFromMovement(movement);
+        player.setFacingFromMovement(movement); //dash 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)) {
             player.startDash();
         }
@@ -46,13 +46,13 @@ public class ControllerPLAYER {
 
         player.getVelocity().x = player.isDashing() ? player.getFacing() * player.getDashSpeed() : movement * player.getMoveSpeed();
 
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.W) //foward
-            || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && player.isGrounded()) { //jump
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.W) //jump
+            || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && player.isGrounded()) { //jump 2
             player.getVelocity().y = ModelPLAYER.JUMP_SPEED;
             player.setGrounded(false);
         }
 
-        float magicOrbDirectionX = 0f;
+        float magicOrbDirectionX = 0f; //the orb movement logic
         float magicOrbDirectionY = 0f;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) magicOrbDirectionX -= 1f;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) magicOrbDirectionX += 1f;

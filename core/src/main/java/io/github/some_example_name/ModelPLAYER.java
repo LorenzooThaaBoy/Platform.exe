@@ -15,7 +15,7 @@ public class ModelPLAYER {
         LIGHTNING,
         BRIMSTONE
     }
-
+//player stats 
     public static final float WIDTH = 32f;
     public static final float HEIGHT = 46f;
     public static final float MOVE_SPEED = 210f;
@@ -75,6 +75,7 @@ public class ModelPLAYER {
     private int brimstoneDirection = 1;
     private int brimstoneAttackId;
 
+    //bunc of getter and setter methods for player stats and status updates for correct rendering and game logic
     public Rectangle getBounds() { 
         return bounds;
     }
@@ -273,7 +274,7 @@ public class ModelPLAYER {
         brimstoneCooldownTimer = Math.max(0f, brimstoneCooldownTimer - delta);
     }
 
-    public void updateSecondaryItemInput(float delta, boolean justPressed, boolean pressed) {
+    public void updateSecondaryItemInput(float delta, boolean justPressed, boolean pressed) { //seconday item input handling 
         lightningRequested = false;
 
         if (secondaryItem == SecondaryItem.LIGHTNING) {

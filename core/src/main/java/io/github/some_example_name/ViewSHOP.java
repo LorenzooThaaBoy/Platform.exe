@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color; //TODO: Item sprites  + item testing
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
+// shop dimentions and stuff 
 public class ViewSHOP {
     private static final float CARD_WIDTH = 150f;
     private static final float CARD_HEIGHT = 170f;

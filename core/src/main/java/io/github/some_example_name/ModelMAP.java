@@ -12,7 +12,7 @@ public class ModelMAP { //Map parameters
     private final Array<Rectangle> platforms = new Array<>();
     private final Array<Vector2> enemySpawnPoints = new Array<>();
 
-    public ModelMAP() {  
+    public ModelMAP() {  //platform parameters 
         platforms.add(new Rectangle(80f, 114f, 150f, 22f)); //bottom
         platforms.add(new Rectangle(310f, 114f, 150f, 22f)); //bottom
         platforms.add(new Rectangle(540, 114f, 150f, 22f)); //bottom
@@ -21,7 +21,7 @@ public class ModelMAP { //Map parameters
         platforms.add(new Rectangle(310f, 286f, 150f, 22f)); //on top 
          //jumpheght = 126
 
-        enemySpawnPoints.add(new Vector2(-40f, 310f)); 
+        enemySpawnPoints.add(new Vector2(-40f, 310f)); //enemy spawn points placement 
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH + 40f, 330f));
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH + 40f, 210f));
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH/2, 500f));

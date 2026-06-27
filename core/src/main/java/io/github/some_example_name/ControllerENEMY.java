@@ -4,9 +4,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class ControllerENEMY {
-    private static final int BASE_ENEMIES_PER_WAVE = 0;
-    private static final int BASE_MAX_ENEMIES = 0;
+public class ControllerENEMY { //enemy parameters
+    private static final int BASE_ENEMIES_PER_WAVE = 2;
+    private static final int BASE_MAX_ENEMIES = 7;
     private static final int BASE_ENEMY_SWORD_HITS = 1;
     private static final float BASE_ENEMY_SPEED = 95f;
     private static final float BASE_SPAWN_INTERVAL = 2.2f;
@@ -35,7 +35,7 @@ public class ControllerENEMY {
         return projectiles;
     }
 
-    public int getWave() {
+    public int getWave() { //bunch of getter methods for status updates for correct rendering and game logic
         return wave;
     }
 
@@ -79,11 +79,11 @@ public class ControllerENEMY {
         return lightningEffectY;
     }
 
-    public void update(ModelMAP map, ModelPLAYER player, ControllerPLAYER controllerPlayer, float delta) {
+    public void update(ModelMAP map, ModelPLAYER player, ControllerPLAYER controllerPlayer, float delta) { //???
         if (waveComplete) return;
 
-        lightningEffectTimer = Math.max(0f, lightningEffectTimer - delta);
-        spawnTimer -= delta;
+        lightningEffectTimer = Math.max(0f, lightningEffectTimer - delta); //???????????? why is this here?
+        spawnTimer -= delta; 
         if (spawnTimer <= 0f && spawnedThisWave < getEnemiesThisWave() && enemies.size < getMaxEnemiesAlive()) {
             spawnEnemy(map);
             spawnTimer = getSpawnInterval();
@@ -108,7 +108,7 @@ public class ControllerENEMY {
                 }
             }
 
-            if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT
+            if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT //magic hat kill logic 
                 && controllerPlayer.getMagicOrbBounds().overlaps(enemy.getBounds())) {
                 if (damageEnemy(enemy, controllerPlayer.getMagicOrbDamage(player), controllerPlayer.getMagicOrbAttackId(), player)) {
                     enemies.removeIndex(i);
@@ -116,7 +116,7 @@ public class ControllerENEMY {
                 }
             }
 
-            if (player.isDashing() && player.getDashBounds().overlaps(enemy.getBounds())) {
+            if (player.isDashing() && player.getDashBounds().overlaps(enemy.getBounds())) { // dash kill
                 if (damageEnemy(enemy, player.getDashDamage(), player.getDashAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
@@ -124,7 +124,7 @@ public class ControllerENEMY {
             }
 
             Rectangle brimstoneBeamBounds = player.getBrimstoneBeamBounds();
-            if (player.isBrimstoneBeamActive() && brimstoneBeamBounds.overlaps(enemy.getBounds())) {
+            if (player.isBrimstoneBeamActive() && brimstoneBeamBounds.overlaps(enemy.getBounds())) { // brimstone kill logic
                 if (damageEnemy(enemy, player.getBrimstoneDamage(), player.getBrimstoneAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
@@ -151,7 +151,7 @@ public class ControllerENEMY {
         waveComplete = false;
     }
 
-    public void startNextWave() {
+    public void startNextWave() { //start next wave 
         wave++;
         enemies.clear();
         projectiles.clear();
@@ -181,7 +181,7 @@ public class ControllerENEMY {
         }
     }
 
-    private void updateLightning(ModelPLAYER player) {
+    private void updateLightning(ModelPLAYER player) { //????
         if (!player.isLightningRequested() || enemies.size == 0) return;
 
         int enemyIndex = MathUtils.random(enemies.size - 1);
@@ -205,7 +205,7 @@ public class ControllerENEMY {
         return false;
     }
 
-    private void spawnScatter(ModelENEMY enemy, ModelPLAYER player) {
+    private void spawnScatter(ModelENEMY enemy, ModelPLAYER player) { //scatter item logic 
         if (!player.hasScatter()) return;
 
         Rectangle bounds = enemy.getBounds();

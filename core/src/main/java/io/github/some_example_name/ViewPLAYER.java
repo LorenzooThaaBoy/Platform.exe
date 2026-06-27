@@ -17,15 +17,15 @@ import com.esotericsoftware.spine.Skin;
 import com.esotericsoftware.spine.SlotData;
 import com.esotericsoftware.spine.attachments.RegionAttachment;
 
-public class ViewPLAYER {//TODO: fix spine + sprites for animation 
+public class ViewPLAYER {// player rendering class, handles the rendering of the player character and its components (thse are variables for adjsuting)
     private static final int SPRITE_FACING_OFFSET = -1;
     private static final float TORSO_LENGTH = 34f;
     private static final float HEAD_LENGTH = 16f;
     private static final float SHOULDER_LENGTH = 15f;
-    private static final float SHOULDER_SCALE_X = 2f;
-    private static final float SHOULDER_SCALE_Y = 2f;
+    private static final float SHOULDER_SCALE_X = 1.5f;
+    private static final float SHOULDER_SCALE_Y = 1.5f;
     private static final float UPPER_ARM_LENGTH = 20f;
-    private static final float LOWER_ARM_LENGTH = 20f;
+    private static final float LOWER_ARM_LENGTH = 25f;
     private static final float ARM_FORWARD = -1f;
     private static final float HAND_JOINT_DISTANCE = 16f;
     private static final float UPPER_LEG_LENGTH = 20f;
@@ -35,7 +35,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
     private static final float HEAD_ROTATION = 0f;
     private static final float SHOULDER_ROTATION = -90f;
     //private static final float UPPER_ARM_ROTATION = -90f; // will figure out later maby 
-    private static final float LOWER_ARM_ROTATION = -180f;
+    private static final float LOWER_ARM_ROTATION = 0f;
     private static final float UPPER_LEG_ROTATION = 0f;
     private static final float LOWER_LEG_ROTATION = 0f;
     private static final float SWORD_ROTATION = 45f;
@@ -44,7 +44,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
     private static final float FRONT_FOREARM_READY_ROTATION = 0f;
     private static final float SWORD_READY_ROTATION = 38f;
     private static final float DEBUG_UPPER_ARM_BAR_THICKNESS = 3f;
-    private static final float DEBUG_JOINT_DOT_SIZE = 3.5f;
+    private static final float DEBUG_JOINT_DOT_SIZE = 0f;
 
     private final Texture blockTexture;
     private final TextureRegion blockRegion;
@@ -81,7 +81,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
     private float animationTime;
     private float attackAnimationTime;
 
-    public ViewPLAYER() {
+    public ViewPLAYER() { //texture loading and skeleton setup for the player character
         blockTexture = createWhitePixelTexture();
         blockRegion = new TextureRegion(blockTexture);
         headTexture = new Texture("Head.PNG");
@@ -119,7 +119,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         frontLowerLeg = skeleton.findBone("front-lower-leg");
     }
 
-    public void render(SpriteBatch batch, ModelPLAYER player, float delta) {
+    public void render(SpriteBatch batch, ModelPLAYER player, float delta) { //render
         animationTime += delta;
         if (player.isAttacking()) {
             attackAnimationTime += delta;
@@ -131,7 +131,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         skeletonRenderer.draw(batch, skeleton);
     }
 
-    public void renderHitboxes(ShapeRenderer shapes, ModelPLAYER player) {
+    public void renderHitboxes(ShapeRenderer shapes, ModelPLAYER player) { //rendering hitboxes for testing 
         if (player.isHurt()) {
             shapes.setColor(new Color(1f, 0.35f, 0.35f, 0.35f));
         } else {
@@ -159,7 +159,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
             );
         }
 
-        if (player.isBrimstoneBeamActive()) {
+        if (player.isBrimstoneBeamActive()) { //brimstone beam rendering (missing srpte so far) 
             Rectangle brimstoneBeamBounds = player.getBrimstoneBeamBounds();
             shapes.setColor(new Color(1f, 0.28f, 0.05f, 0.65f));
             shapes.rect(
@@ -171,7 +171,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         }
     }
 
-    public void dispose() {
+    public void dispose() { //is this needed?
         blockTexture.dispose();
         headTexture.dispose();
         torsoTexture.dispose();
@@ -182,7 +182,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         swordTexture.dispose();
     }
 
-    private void poseSkeleton(ModelPLAYER player) { // spine animation skeleton factors
+    private void poseSkeleton(ModelPLAYER player) { // spine animation skeleton 
         skeleton.setBonesToSetupPose();
 
         float centerX = player.getBounds().x + player.getBounds().width / 2f;
@@ -214,7 +214,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         frontForearm.setRotation(FRONT_FOREARM_READY_ROTATION);
         sword.setRotation(SWORD_READY_ROTATION);
 
-        if (risingOrFalling) {
+        if (risingOrFalling) { //fall animationn
             torso.setRotation(player.getVelocity().y > 0f ? -6f : 6f);
             backUpperLeg.setRotation(-12f);
             backLowerLeg.setRotation(20f);
@@ -222,7 +222,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
             frontLowerLeg.setRotation(10f);
         }
 
-        if (player.isAttacking()) {
+        if (player.isAttacking()) { //attack animation 
             float attackPhase = MathUtils.clamp(attackAnimationTime / ATTACK_ANIMATION_DURATION, 0f, 1f);
             float swing = MathUtils.sin(attackPhase * MathUtils.PI * 0.5f);
             if (player.getAttackDirectionY() > 0) {
@@ -241,8 +241,8 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         skeleton.updateWorldTransform(Skeleton.Physics.update);
     }
 
-    private SkeletonData createPrototypeSkeletonData() {
-        SkeletonData data = new SkeletonData();
+    private SkeletonData createPrototypeSkeletonData() { // bone and sprite rendering data 
+        SkeletonData data = new SkeletonData();  
         data.setName("prototype-block-player");
 
         BoneData rootData = addBone(data, 0, "root", null, 0f, 0f);
@@ -265,11 +265,11 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         addFittedSlot(data, skin, 1, "back-forearm", backForearmData, lowerArmRegion, -4f, -1f, LOWER_ARM_LENGTH, LOWER_ARM_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 2, "back-shoulder", backUpperArmData, shoulderRegion, -12f, 2f, SHOULDER_LENGTH, SHOULDER_ROTATION, SHOULDER_SCALE_X, SHOULDER_SCALE_Y, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 3, "back-upper-leg", backUpperLegData, upperLegRegion, 0f, -8f, UPPER_LEG_LENGTH, UPPER_LEG_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 4, "back-lower-leg", backLowerLegData, lowerLegRegion, 0f, -9f, LOWER_LEG_LENGTH, LOWER_LEG_ROTATION, 1f, 1f, 1f, 1f);
+        addFittedSlot(data, skin, 4, "back-lower-leg", backLowerLegData, lowerLegRegion, 0f, -1f, LOWER_LEG_LENGTH, LOWER_LEG_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 5, "torso", torsoData, torsoRegion, -2f, 10f, TORSO_LENGTH, TORSO_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 6, "head", headData, headRegion, -4f, 4f, HEAD_LENGTH, HEAD_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 7, "front-upper-leg", frontUpperLegData, upperLegRegion, 0f, -8f, UPPER_LEG_LENGTH, UPPER_LEG_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 8, "front-lower-leg", frontLowerLegData, lowerLegRegion, 0f, -9f, LOWER_LEG_LENGTH, LOWER_LEG_ROTATION, 1f, 1f, 1f, 1f);
+        addFittedSlot(data, skin, 7, "front-upper-leg", frontUpperLegData, upperLegRegion, -5f, -8f, UPPER_LEG_LENGTH, UPPER_LEG_ROTATION, 1f, 1f, 1f, 1f);
+        addFittedSlot(data, skin, 8, "front-lower-leg", frontLowerLegData, lowerLegRegion, -4f,-1f, LOWER_LEG_LENGTH, LOWER_LEG_ROTATION, 1f, 1f, 1f, 1f);
         addDebugBoneBar(data, skin, 9, "front-upper-arm-debug", frontUpperArmData, UPPER_ARM_LENGTH);
         addFittedSlot(data, skin, 10, "front-forearm", frontForearmData, lowerArmRegion, -4f, 4f, LOWER_ARM_LENGTH, LOWER_ARM_ROTATION, 1f, 1f, 1f, 1f);
         addFittedSlot(data, skin, 11, "front-shoulder", frontUpperArmData, shoulderRegion, -1f, 0f, SHOULDER_LENGTH, SHOULDER_ROTATION, SHOULDER_SCALE_X, SHOULDER_SCALE_Y, 1f, 1f, 1f, 1f);
@@ -322,7 +322,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         );
     }
 
-    private void addDebugJointDot(SkeletonData data, Skin skin, int index, String name, BoneData bone) {
+    private void addDebugJointDot(SkeletonData data, Skin skin, int index, String name, BoneData bone) { //what is this for???
         addBlockSlot(
             data,
             skin,
@@ -344,7 +344,7 @@ public class ViewPLAYER {//TODO: fix spine + sprites for animation
         );
     }
 
-    private void addFittedSlot(
+    private void addFittedSlot( // tf iss this ? 
         SkeletonData data,
         Skin skin,
         int index,
