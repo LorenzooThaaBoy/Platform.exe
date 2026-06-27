@@ -6,7 +6,7 @@ Platformer THE GAME is a small 2D arena platformer. The player moves across a co
 The current idea is to grow the game into round-based survival: enemies spawn from different sides of the map, chase the player, and deal damage on contact. After surviving rounds, the player should be able to enter a shop and buy upgrades such as more damage, more range, extra HP, more speed, or a dash.
 
 
-git clone https://github.com/LorenzooThaaBoy/Platform.exe/blob/main/README.md 
+git clone https://github.com/LorenzooThaaBoy/Platform.exe
 
 ## Development 
 ### Code Strucutre
