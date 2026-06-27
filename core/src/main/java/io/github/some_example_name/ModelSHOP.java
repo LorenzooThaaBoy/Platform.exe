@@ -1,20 +1,46 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.math.MathUtils;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
+//shop model, item rolls + selected item
 public class ModelSHOP {
     private static final int SHOP_SLOT_COUNT = 3;
 
-    public enum Item { // all da items cash money
-        DAMAGE_UP,
-        RANGE_UP,
-        HP_UP,
-        SPEED_UP,
-        DASH,
-        MAGIC_HAT,
-        LIGHTNING,
-        SCATTER,
-        BRIMSTONE
+    //item table, name + text + effect
+    public enum Item {
+        DAMAGE_UP("Damage Up", player -> player.canUpgradeDamage() ? "x" + player.getNextDamageMultiplier() + " dmg" : "Max dmg", ModelPLAYER::upgradeDamage),
+        RANGE_UP("Range Up", player -> player.canUpgradeRange() ? "+" + (int)player.getNextRangeBonus() + " reach" : "Max range", ModelPLAYER::upgradeRange),
+        HP_UP("HP Up", player -> "+1 heart, full heal", ModelPLAYER::upgradeHealth),
+        SPEED_UP("Speed Up", player -> player.canUpgradeSpeed() ? "x" + player.getNextSpeedMultiplier() + " speed" : "Max speed", ModelPLAYER::upgradeSpeed),
+        DASH("Dash", player -> player.canUpgradeDash() ? (int)player.getNextDashSpeed() + " dash, " + player.getNextDashDamage() + " dmg" : "Max dash", ModelPLAYER::upgradeDash),
+        MAGIC_HAT("Magic Hat", player -> "Primary: arrow orb", player -> player.equipPrimaryItem(ModelPLAYER.PrimaryItem.MAGIC_HAT)),
+        LIGHTNING("Lightning", player -> "Secondary: C zap", player -> player.equipSecondaryItem(ModelPLAYER.SecondaryItem.LIGHTNING)),
+        SCATTER("Scatter", player -> player.hasScatter() ? "Owned passive" : "Passive death burst", ModelPLAYER::unlockScatter),
+        BRIMSTONE("Brimstone", player -> "Secondary: hold C", player -> player.equipSecondaryItem(ModelPLAYER.SecondaryItem.BRIMSTONE));
+
+        private final String displayName;
+        private final Function<ModelPLAYER, String> description;
+        private final Consumer<ModelPLAYER> apply;
+
+        Item(String displayName, Function<ModelPLAYER, String> description, Consumer<ModelPLAYER> apply) {
+            this.displayName = displayName;
+            this.description = description;
+            this.apply = apply;
+        }
+
+        String getDisplayName() {
+            return displayName;
+        }
+
+        String getDescription(ModelPLAYER player) {
+            return description.apply(player);
+        }
+
+        void apply(ModelPLAYER player) {
+            apply.accept(player);
+        }
     }
 
     private final Item[] itemPool = {
@@ -48,54 +74,12 @@ public class ModelSHOP {
         return getItemName(selectedIndex);
     }
 
-    public String getItemName(int index) { //item names 
-        switch (items[index]) {
-            case DAMAGE_UP:
-                return "Damage Up";
-            case RANGE_UP:
-                return "Range Up";
-            case HP_UP:
-                return "HP Up";
-            case SPEED_UP:
-                return "Speed Up";
-            case DASH:
-                return "Dash";
-            case MAGIC_HAT:
-                return "Magic Hat";
-            case LIGHTNING:
-                return "Lightning";
-            case SCATTER:
-                return "Scatter";
-            case BRIMSTONE:
-                return "Brimstone";
-            default:
-                return "";
-        }
+    public String getItemName(int index) {
+        return items[index].getDisplayName();
     }
 
-    public String getItemDescription(int index, ModelPLAYER player) { //player advice for items 
-        switch (items[index]) {
-            case DAMAGE_UP:
-                return player.canUpgradeDamage() ? "x" + player.getNextDamageMultiplier() + " dmg" : "Max dmg";
-            case RANGE_UP:
-                return player.canUpgradeRange() ? "+" + (int)player.getNextRangeBonus() + " reach" : "Max range";
-            case HP_UP:
-                return "+1 heart, full heal";
-            case SPEED_UP:
-                return player.canUpgradeSpeed() ? "x" + player.getNextSpeedMultiplier() + " speed" : "Max speed";
-            case DASH:
-                return player.canUpgradeDash() ? (int)player.getNextDashSpeed() + " dash, " + player.getNextDashDamage() + " dmg" : "Max dash";
-            case MAGIC_HAT:
-                return "Primary: arrow orb";
-            case LIGHTNING:
-                return "Secondary: C zap";
-            case SCATTER:
-                return player.hasScatter() ? "Owned passive" : "Passive death burst";
-            case BRIMSTONE:
-                return "Secondary: hold C";
-            default:
-                return "";
-        }
+    public String getItemDescription(int index, ModelPLAYER player) {
+        return items[index].getDescription(player);
     }
 
     public boolean isItemSelected() {
@@ -116,38 +100,8 @@ public class ModelSHOP {
         itemSelected = true;
     }
 
-    public void applySelectedItem(ModelPLAYER player) { // BAAADDDDD DSWICTH STATMENTSSSSSS
-        switch (items[selectedIndex]) {
-            case DAMAGE_UP:
-                player.upgradeDamage();
-                break;
-            case RANGE_UP:
-                player.upgradeRange();
-                break;
-            case HP_UP:
-                player.upgradeHealth();
-                break;
-            case SPEED_UP:
-                player.upgradeSpeed();
-                break;
-            case DASH:
-                player.upgradeDash();
-                break;
-            case MAGIC_HAT:
-                player.equipPrimaryItem(ModelPLAYER.PrimaryItem.MAGIC_HAT);
-                break;
-            case LIGHTNING:
-                player.equipSecondaryItem(ModelPLAYER.SecondaryItem.LIGHTNING);
-                break;
-            case SCATTER:
-                player.unlockScatter();
-                break;
-            case BRIMSTONE:
-                player.equipSecondaryItem(ModelPLAYER.SecondaryItem.BRIMSTONE);
-                break;
-            default:
-                break;
-        }
+    public void applySelectedItem(ModelPLAYER player) {
+        items[selectedIndex].apply(player);
     }
 
     public void resetForShop() {
@@ -157,6 +111,7 @@ public class ModelSHOP {
     }
 
     private void rollItems() {
+        //random 3, no duplicates
         Item[] availableItems = itemPool.clone();
         for (int i = 0; i < items.length; i++) {
             int rolledIndex = MathUtils.random(i, availableItems.length - 1);

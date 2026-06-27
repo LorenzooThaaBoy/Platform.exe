@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class ModelMAP { //Map parameters
+public class ModelMAP {
     public static final float WORLD_WIDTH = 770f;
     public static final float WORLD_HEIGHT = 480f;
     public static final float GROUND_Y = 60f;
@@ -12,16 +12,15 @@ public class ModelMAP { //Map parameters
     private final Array<Rectangle> platforms = new Array<>();
     private final Array<Vector2> enemySpawnPoints = new Array<>();
 
-    public ModelMAP() {  //platform parameters 
-        platforms.add(new Rectangle(80f, 114f, 150f, 22f)); //bottom
-        platforms.add(new Rectangle(310f, 114f, 150f, 22f)); //bottom
-        platforms.add(new Rectangle(540, 114f, 150f, 22f)); //bottom
-        platforms.add(new Rectangle(155f, 200f, 150f, 22f)); //top 
-        platforms.add(new Rectangle(460f, 200f, 150f, 22f)); //top
-        platforms.add(new Rectangle(310f, 286f, 150f, 22f)); //on top 
-         //jumpheght = 126
+    public ModelMAP() {
+        platforms.add(new Rectangle(80f, 114f, 150f, 22f));
+        platforms.add(new Rectangle(310f, 114f, 150f, 22f));
+        platforms.add(new Rectangle(540, 114f, 150f, 22f));
+        platforms.add(new Rectangle(155f, 200f, 150f, 22f));
+        platforms.add(new Rectangle(460f, 200f, 150f, 22f));
+        platforms.add(new Rectangle(310f, 286f, 150f, 22f));
 
-        enemySpawnPoints.add(new Vector2(-40f, 310f)); //enemy spawn points placement 
+        enemySpawnPoints.add(new Vector2(-40f, 310f));
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH + 40f, 330f));
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH + 40f, 210f));
         enemySpawnPoints.add(new Vector2(WORLD_WIDTH/2, 500f));

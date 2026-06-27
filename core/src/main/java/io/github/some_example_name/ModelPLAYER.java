@@ -3,9 +3,9 @@ package io.github.some_example_name;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-//TODO: mcv pattern + shorten everything if possible 
-
+//TODO: keep this mvc, model = player data + player ability state
 public class ModelPLAYER {
+    //equipped item types
     public enum PrimaryItem {
         NONE, MAGIC_HAT
     }
@@ -15,7 +15,8 @@ public class ModelPLAYER {
         LIGHTNING,
         BRIMSTONE
     }
-//player stats 
+
+    //player stats
     public static final float WIDTH = 32f;
     public static final float HEIGHT = 46f;
     public static final float MOVE_SPEED = 210f;
@@ -45,6 +46,7 @@ public class ModelPLAYER {
     private static final float BRIMSTONE_BEAM_HEIGHT = 18f;
     private static final float BRIMSTONE_DAMAGE = 4f;
 
+    //position + current state
     private final Rectangle bounds = new Rectangle(80f, ModelMAP.GROUND_Y, WIDTH, HEIGHT);
     private final Vector2 velocity = new Vector2();
     private int lives = BASE_MAX_LIVES;
@@ -75,7 +77,7 @@ public class ModelPLAYER {
     private int brimstoneDirection = 1;
     private int brimstoneAttackId;
 
-    //bunc of getter and setter methods for player stats and status updates for correct rendering and game logic
+    //getters for controller/view stuff
     public Rectangle getBounds() { 
         return bounds;
     }
@@ -266,6 +268,7 @@ public class ModelPLAYER {
     }
 
     public void updateTimers(float delta) {
+        //count down action windows
         attackTimer = Math.max(0f, attackTimer - delta);
         hurtTimer = Math.max(0f, hurtTimer - delta);
         dashTimer = Math.max(0f, dashTimer - delta);
@@ -274,7 +277,8 @@ public class ModelPLAYER {
         brimstoneCooldownTimer = Math.max(0f, brimstoneCooldownTimer - delta);
     }
 
-    public void updateSecondaryItemInput(float delta, boolean justPressed, boolean pressed) { //seconday item input handling 
+    public void updateSecondaryItemInput(float delta, boolean justPressed, boolean pressed) {
+        //lightning = tap C
         lightningRequested = false;
 
         if (secondaryItem == SecondaryItem.LIGHTNING) {
@@ -286,6 +290,7 @@ public class ModelPLAYER {
             return;
         }
 
+        //brimstone = hold C then release
         if (secondaryItem != SecondaryItem.BRIMSTONE) {
             brimstoneChargeTimer = 0f;
             return;
@@ -318,6 +323,7 @@ public class ModelPLAYER {
     }
 
     public void startDash() {
+        //dash only after upgrade
         if (dashLevel <= 0 || dashTimer > 0f || dashCooldownTimer > 0f) return;
 
         dashDirection = facing;
@@ -328,6 +334,7 @@ public class ModelPLAYER {
     }
 
     public Rectangle getAttackBounds() {
+        //sword hitbox, side or up
         float rangeBonus = RANGE_BONUSES[rangeLevel];
         float attackWidth = attackDirectionY > 0 ? BASE_UP_ATTACK_WIDTH + rangeBonus * 0.4f : BASE_ATTACK_WIDTH + rangeBonus;
         float attackHeight = attackDirectionY > 0 ? BASE_UP_ATTACK_HEIGHT + rangeBonus : BASE_ATTACK_HEIGHT;
@@ -340,12 +347,14 @@ public class ModelPLAYER {
     }
 
     public Rectangle getDashBounds() {
+        //dash damage box in front
         float reach = DASH_REACH[dashLevel];
         float dashX = dashDirection > 0 ? bounds.x + bounds.width : bounds.x - reach;
         return new Rectangle(dashX, bounds.y + 4f, reach, bounds.height - 8f);
     }
 
     public Rectangle getBrimstoneBeamBounds() {
+        //beam across screen
         float beamY = bounds.y + bounds.height / 2f - BRIMSTONE_BEAM_HEIGHT / 2f;
         if (brimstoneDirection > 0) {
             float beamX = bounds.x + bounds.width;
@@ -394,6 +403,7 @@ public class ModelPLAYER {
     }
 
     public void reset() {
+        //new run reset
         bounds.set(80f, ModelMAP.GROUND_Y, WIDTH, HEIGHT);
         velocity.setZero();
         lives = BASE_MAX_LIVES;

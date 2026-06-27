@@ -1,11 +1,13 @@
 package io.github.some_example_name;
 
-import com.badlogic.gdx.graphics.Color; //TODO: Item sprites  + item testing 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-// shop dimentions and stuff 
+
+//TODO: item sprites later
 public class ViewSHOP {
+    //shop card layout
     private static final float CARD_WIDTH = 150f;
     private static final float CARD_HEIGHT = 170f;
     private static final float CARD_Y = 145f;
@@ -13,9 +15,11 @@ public class ViewSHOP {
     private static final float CARD_GAP = 35f;
 
     public void render(ShapeRenderer shapes, ModelSHOP shop) {
+        //shop background
         shapes.setColor(new Color(0.12f, 0.1f, 0.18f, 1f));
         shapes.rect(0f, 0f, ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT);
 
+        //3 item cards
         for (int i = 0; i < shop.getItems().length; i++) {
             float x = FIRST_CARD_X + i * (CARD_WIDTH + CARD_GAP);
             boolean selected = i == shop.getSelectedIndex();
@@ -32,6 +36,7 @@ public class ViewSHOP {
     }
 
     public void renderText(SpriteBatch batch, BitmapFont font, ModelSHOP shop, ModelPLAYER player, int nextWave) {
+        //text layer after shapes
         font.draw(batch, "SHOP", 365f, 390f);
         font.draw(batch, "Wave " + nextWave + " starts after you leave", 280f, 365f);
 

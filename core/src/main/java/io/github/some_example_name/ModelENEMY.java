@@ -3,7 +3,7 @@ package io.github.some_example_name;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class ModelENEMY { //enemy logic and parameters
+public class ModelENEMY {
     public static final float SIZE = 28f;
 
     private final Rectangle bounds;
@@ -23,20 +23,8 @@ public class ModelENEMY { //enemy logic and parameters
         return bounds;
     }
 
-    public Vector2 getVelocity() {
-        return velocity;
-    }
-
     public boolean isAlive() {
         return alive;
-    }
-
-    public float getHitPoints() {
-        return hitPoints;
-    }
-
-    public void kill() {
-        alive = false;
     }
 
     public void takeDamage(float damage, int attackId) {
@@ -45,7 +33,7 @@ public class ModelENEMY { //enemy logic and parameters
         lastHitAttackId = attackId;
         hitPoints -= damage;
         if (hitPoints <= 0) {
-            kill();
+            alive = false;
         }
     }
 

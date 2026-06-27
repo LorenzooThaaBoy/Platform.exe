@@ -5,7 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
+//player input + movement controller
 public class ControllerPLAYER {
+    //magic hat orb stats
     private static final float MAGIC_ORB_SIZE = 18f;
     private static final float MAGIC_ORB_BASE_SPEED = 185f;
     private static final float MAGIC_ORB_BASE_DPS = 2f;
@@ -28,17 +30,19 @@ public class ControllerPLAYER {
     }
 
     public void update(ModelPLAYER player, ModelMAP map, float delta) {
+        //timers first
         player.updateTimers(delta);
 
+        //A/D movement
         float movement = 0f;
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) { //left
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             movement -= 1f;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {//right
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             movement += 1f;
         }
 
-        player.setFacingFromMovement(movement); //dash 
+        player.setFacingFromMovement(movement);
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)) {
             player.startDash();
         }
@@ -46,13 +50,15 @@ public class ControllerPLAYER {
 
         player.getVelocity().x = player.isDashing() ? player.getFacing() * player.getDashSpeed() : movement * player.getMoveSpeed();
 
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.W) //jump
-            || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && player.isGrounded()) { //jump 2
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.W)
+            || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) && player.isGrounded()) {
+            //jump
             player.getVelocity().y = ModelPLAYER.JUMP_SPEED;
             player.setGrounded(false);
         }
 
-        float magicOrbDirectionX = 0f; //the orb movement logic
+        //arrow keys move orb / attack
+        float magicOrbDirectionX = 0f;
         float magicOrbDirectionY = 0f;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) magicOrbDirectionX -= 1f;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) magicOrbDirectionX += 1f;
@@ -76,7 +82,8 @@ public class ControllerPLAYER {
         moveAndCollide(player, map, delta);
     }
 
-    private void moveAndCollide(ModelPLAYER player, ModelMAP map, float delta) { //colllison logic 
+    private void moveAndCollide(ModelPLAYER player, ModelMAP map, float delta) {
+        //x first, then y platforms
         Rectangle bounds = player.getBounds();
 
         bounds.x += player.getVelocity().x * delta;
@@ -94,7 +101,7 @@ public class ControllerPLAYER {
             float previousTop = previousY + bounds.height;
             float platformTop = platform.y + platform.height;
 
-            if (player.getVelocity().y <= 0f && previousBottom >= platformTop - 3f) { //platform collision
+            if (player.getVelocity().y <= 0f && previousBottom >= platformTop - 3f) {
                 bounds.y = platformTop;
                 player.getVelocity().y = 0f;
                 player.setGrounded(true);
@@ -112,6 +119,7 @@ public class ControllerPLAYER {
     }
 
     private void updateMagicOrb(ModelPLAYER player, float directionX, float directionY, float delta) {
+        //only exists with magic hat
         if (player.getPrimaryItem() != ModelPLAYER.PrimaryItem.MAGIC_HAT) {
             magicOrbBounds.set(0f, 0f, 0f, 0f);
             return;
@@ -121,6 +129,7 @@ public class ControllerPLAYER {
             resetMagicOrbPosition(player);
         }
 
+        //new hit id every damage tick
         magicOrbDamageTimer -= delta;
         if (magicOrbDamageTimer <= 0f) {
             magicOrbAttackId--;
@@ -140,6 +149,7 @@ public class ControllerPLAYER {
     }
 
     private void resetMagicOrbPosition(ModelPLAYER player) {
+        //starts on player
         Rectangle playerBounds = player.getBounds();
         magicOrbBounds.set(
             playerBounds.x + playerBounds.width / 2f - MAGIC_ORB_SIZE / 2f,

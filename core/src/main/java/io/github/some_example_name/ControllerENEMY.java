@@ -1,10 +1,13 @@
-package io.github.some_example_name; 
+package io.github.some_example_name;
+
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class ControllerENEMY { //enemy parameters
+//enemy wave controller
+public class ControllerENEMY {
+    //wave scaling stuff
     private static final int BASE_ENEMIES_PER_WAVE = 2;
     private static final int BASE_MAX_ENEMIES = 7;
     private static final int BASE_ENEMY_SWORD_HITS = 1;
@@ -27,6 +30,7 @@ public class ControllerENEMY { //enemy parameters
     private int spawnedThisWave;
     private boolean waveComplete;
 
+    //used by view
     public Array<ModelENEMY> getEnemies() {
         return enemies;
     }
@@ -35,7 +39,7 @@ public class ControllerENEMY { //enemy parameters
         return projectiles;
     }
 
-    public int getWave() { //bunch of getter methods for status updates for correct rendering and game logic
+    public int getWave() {
         return wave;
     }
 
@@ -79,10 +83,11 @@ public class ControllerENEMY { //enemy parameters
         return lightningEffectY;
     }
 
-    public void update(ModelMAP map, ModelPLAYER player, ControllerPLAYER controllerPlayer, float delta) { //???
+    public void update(ModelMAP map, ModelPLAYER player, ControllerPLAYER controllerPlayer, float delta) {
         if (waveComplete) return;
 
-        lightningEffectTimer = Math.max(0f, lightningEffectTimer - delta); //???????????? why is this here?
+        //spawn timer + lightning visual timer
+        lightningEffectTimer = Math.max(0f, lightningEffectTimer - delta);
         spawnTimer -= delta; 
         if (spawnTimer <= 0f && spawnedThisWave < getEnemiesThisWave() && enemies.size < getMaxEnemiesAlive()) {
             spawnEnemy(map);
@@ -92,7 +97,8 @@ public class ControllerENEMY { //enemy parameters
         updateProjectiles(delta, player);
         updateLightning(player);
 
-        for (int i = enemies.size - 1; i >= 0; i--) { //enemy death
+        //move enemies and check all player damage sources
+        for (int i = enemies.size - 1; i >= 0; i--) {
             ModelENEMY enemy = enemies.get(i);
             if (!enemy.isAlive()) {
                 enemies.removeIndex(i);
@@ -101,14 +107,14 @@ public class ControllerENEMY { //enemy parameters
 
             enemy.updateTowards(player.getBounds(), delta); 
 
-            if (player.isAttacking() && player.getAttackBounds().overlaps(enemy.getBounds())) { // enemy death logic
+            if (player.isAttacking() && player.getAttackBounds().overlaps(enemy.getBounds())) {
                 if (damageEnemy(enemy, player.getSwordDamage(), player.getAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
                 }
             }
 
-            if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT //magic hat kill logic 
+            if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT
                 && controllerPlayer.getMagicOrbBounds().overlaps(enemy.getBounds())) {
                 if (damageEnemy(enemy, controllerPlayer.getMagicOrbDamage(player), controllerPlayer.getMagicOrbAttackId(), player)) {
                     enemies.removeIndex(i);
@@ -116,7 +122,7 @@ public class ControllerENEMY { //enemy parameters
                 }
             }
 
-            if (player.isDashing() && player.getDashBounds().overlaps(enemy.getBounds())) { // dash kill
+            if (player.isDashing() && player.getDashBounds().overlaps(enemy.getBounds())) {
                 if (damageEnemy(enemy, player.getDashDamage(), player.getDashAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
@@ -124,7 +130,7 @@ public class ControllerENEMY { //enemy parameters
             }
 
             Rectangle brimstoneBeamBounds = player.getBrimstoneBeamBounds();
-            if (player.isBrimstoneBeamActive() && brimstoneBeamBounds.overlaps(enemy.getBounds())) { // brimstone kill logic
+            if (player.isBrimstoneBeamActive() && brimstoneBeamBounds.overlaps(enemy.getBounds())) {
                 if (damageEnemy(enemy, player.getBrimstoneDamage(), player.getBrimstoneAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
@@ -151,7 +157,7 @@ public class ControllerENEMY { //enemy parameters
         waveComplete = false;
     }
 
-    public void startNextWave() { //start next wave 
+    public void startNextWave() {
         wave++;
         enemies.clear();
         projectiles.clear();
@@ -162,6 +168,7 @@ public class ControllerENEMY { //enemy parameters
     }
 
     private void updateProjectiles(float delta, ModelPLAYER player) {
+        //scatter balls
         for (int i = projectiles.size - 1; i >= 0; i--) {
             ModelPROJECTILE projectile = projectiles.get(i);
             projectile.update(delta);
@@ -181,7 +188,8 @@ public class ControllerENEMY { //enemy parameters
         }
     }
 
-    private void updateLightning(ModelPLAYER player) { //????
+    private void updateLightning(ModelPLAYER player) {
+        //zap random enemy
         if (!player.isLightningRequested() || enemies.size == 0) return;
 
         int enemyIndex = MathUtils.random(enemies.size - 1);
@@ -205,7 +213,8 @@ public class ControllerENEMY { //enemy parameters
         return false;
     }
 
-    private void spawnScatter(ModelENEMY enemy, ModelPLAYER player) { //scatter item logic 
+    private void spawnScatter(ModelENEMY enemy, ModelPLAYER player) {
+        //death burst passive
         if (!player.hasScatter()) return;
 
         Rectangle bounds = enemy.getBounds();
@@ -224,6 +233,7 @@ public class ControllerENEMY { //enemy parameters
     }
 
     private void spawnEnemy(ModelMAP map) {
+        //cycles spawn points
         if (map.getEnemySpawnPoints().size == 0) return; 
 
         Vector2 spawnPoint = map.getEnemySpawnPoints().get(nextSpawnPoint);
