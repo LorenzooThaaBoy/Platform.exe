@@ -22,9 +22,9 @@ We used OpenAi's Codex to write code in this project and help with sprite genera
 
 ## Overview of the game from a developmetal standpoint 
 ![alt text](IMG_5910.jpg)
-map structure 
+Map structure/math
 ![alt text](IMG_5909.jpg)
-oriinal draft for the game idead and cycle 
+Original draft for the game idead and cycle 
 
 
 ## Installation Guide
