@@ -20,13 +20,11 @@ Impotant Note!!!: Most of the code changes were contributed throught lorenzootha
 ## Usage of Artifical Intelligence 
 We used OpenAi's Codex to write code in this project and help with sprite generation and in the general game development process
 
-## Technical Explanation of the game mechanics 
-bla
-bla
-
-## Overview of the map from a developmetal standpoint 
+## Overview of the game from a developmetal standpoint 
 ![alt text](IMG_5910.jpg)
+map structure 
 ![alt text](IMG_5909.jpg)
+oriinal draft for the game idead and cycle 
 
 
 ## Installation Guide
