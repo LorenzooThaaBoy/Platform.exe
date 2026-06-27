@@ -25,8 +25,9 @@ bla
 bla
 
 ## Overview of the map from a developmetal standpoint 
-bla
-bla
+![alt text](IMG_5910.jpg)
+![alt text](IMG_5909.jpg)
+
 
 ## Installation Guide
 There are two normal ways to get the game:

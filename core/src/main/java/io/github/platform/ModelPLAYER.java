@@ -3,7 +3,7 @@ package io.github.platform;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-//TODO: keep this mvc, model = player data + player ability state
+//keep this mvc, model = player data + player ability state
 public class ModelPLAYER {
     //equipped item types
     public enum PrimaryItem {
