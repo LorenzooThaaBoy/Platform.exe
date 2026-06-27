@@ -1,4 +1,4 @@
-package io.github.some_example_name;
+package io.github.platform;
 
 import com.badlogic.gdx.math.MathUtils;
 import java.util.function.Consumer;

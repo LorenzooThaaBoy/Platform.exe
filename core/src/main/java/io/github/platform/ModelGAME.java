@@ -1,4 +1,4 @@
-package io.github.some_example_name;
+package io.github.platform;
 
 //whole game state model
 public class ModelGAME {
