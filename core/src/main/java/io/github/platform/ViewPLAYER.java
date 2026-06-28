@@ -1,5 +1,7 @@
 package io.github.platform;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -16,6 +18,9 @@ public class ViewPLAYER {
      * - *_FRAME_OFFSET_* is for tiny per-frame fixes if one pose still slides.
      */
     private static final String CHARACTER_SHEET_PATH = "character_sprite_sheet.png";
+    private static final String SLASH_1_SOUND_PATH = "slash 1.mp3";
+    private static final String SLASH_2_SOUND_PATH = "slash 2.mp3";
+    private static final float SLASH_SOUND_VOLUME = 0.65f;
     private static final int[] FRAME_BORDER_X = {32, 418, 797, 1175, 1555, 1933, 2318};
     private static final int[] FRAME_BORDER_Y = {32, 405, 772, 1163, 1530};
     private static final int FRAME_BORDER_INSET = 5;
@@ -28,12 +33,12 @@ public class ViewPLAYER {
     private static final int IDLE_FRAME_COUNT = 5;
     private static final int WALK_FRAME_COUNT = 6;
     private static final int HURT_FRAME_COUNT = 4;
-    private static final int ATTACK_FRAME_COUNT = 6;
+    private static final int SLASH_FRAME_COUNT = 3;
 
     private static final float IDLE_DURATION = 0.70f;
     private static final float WALK_DURATION = 0.55f;
     private static final float HURT_DURATION = 0.75f;
-    private static final float ATTACK_DURATION = 0.58f;
+    private static final float SLASH_DURATION = 0.29f;
 
     private static final boolean ANIMATE_IDLE_WHEN_STANDING = true;
     private static final boolean APPLY_FRAME_OFFSETS = true;
@@ -41,15 +46,17 @@ public class ViewPLAYER {
     private static final float[] IDLE_ANCHOR_X = {164.5f, 153f, 144.5f, 141f, 134f};
     private static final float[] WALK_ANCHOR_X = {151f, 155f, 137.5f, 129.5f, 145f, 121f};
     private static final float[] HURT_ANCHOR_X = {209f, 197f, 194.5f, 195f};
-    private static final float[] ATTACK_ANCHOR_X = {83.5f, 80f, 80.5f, 158.5f, 142.5f, 110f};
+    private static final float[] SLASH_1_ANCHOR_X = {83.5f, 80f, 80.5f};
+    private static final float[] SLASH_2_ANCHOR_X = {158.5f, 142.5f, 110f};
     private static final float[] IDLE_FRAME_OFFSET_X = {0f, 0f, 0f, 0f, 0f}; // for each frame a seperate offset
     private static final float[] WALK_FRAME_OFFSET_X = {.3f, 1f, 0f, 0f, 0f, 0f};
     private static final float[] HURT_FRAME_OFFSET_X = {0f, 0f, 0f, 0f};
-    private static final float[] ATTACK_FRAME_OFFSET_X = {0f, 0f, 0f, 0f, 0f, 0f};
+    private static final float[] SLASH_FRAME_OFFSET_X = {0f, 0f, 0f};
     private static final float[] IDLE_FRAME_OFFSET_Y = {0f, -.5f, -.5f, -.5f, -.5f};
     private static final float[] WALK_FRAME_OFFSET_Y = {0f, 0f, 0f, 0f, 0f, 0f};
     private static final float[] HURT_FRAME_OFFSET_Y = {3f, 3.5f, 3.5f, 3.5f};
-    private static final float[] ATTACK_FRAME_OFFSET_Y = {0f, 0f, -.5f, -0f, -0f, 0f};
+    private static final float[] SLASH_1_FRAME_OFFSET_Y = {0f, 0f, -.5f};
+    private static final float[] SLASH_2_FRAME_OFFSET_Y = {0f, 0f, 0f};
 
     private static final float DRAW_WIDTH = 84f;
     private static final float DRAW_HEIGHT = 84f;
@@ -65,31 +72,39 @@ public class ViewPLAYER {
     private final Texture characterSheet;
     private final Texture magicOrbTexture;
     private final Texture laserTexture;
+    private final Sound slash1Sound;
+    private final Sound slash2Sound;
     private final TextureRegion laserBeamRegion;
     private final TextureRegion laserImpactRegion;
     private final SpriteAnimation idleAnimation;
     private final SpriteAnimation walkAnimation;
     private final SpriteAnimation hurtAnimation;
-    private final SpriteAnimation attackAnimation;
+    private final SpriteAnimation slash1Animation;
+    private final SpriteAnimation slash2Animation;
 
     private float animationTime;
     private float hurtAnimationTime;
     private float attackAnimationTime;
-    private int lastAttackId;
+    private int lastSwordAttackId;
     private boolean attackVisualActive;
+    private SpriteAnimation activeAttackAnimation;
 
     public ViewPLAYER() {
         characterSheet = new Texture(CHARACTER_SHEET_PATH);
         characterSheet.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         magicOrbTexture = new Texture("MagicOrbSprite.png");
         laserTexture = new Texture("texture_laser.png");
+        slash1Sound = Gdx.audio.newSound(Gdx.files.internal(SLASH_1_SOUND_PATH));
+        slash2Sound = Gdx.audio.newSound(Gdx.files.internal(SLASH_2_SOUND_PATH));
         laserBeamRegion = new TextureRegion(laserTexture, 154, 677, 70, 626);
         laserImpactRegion = new TextureRegion(laserTexture, 477, 519, 138, 71);
 
         idleAnimation = createAnimation(IDLE_ROW, IDLE_FRAME_COUNT, IDLE_DURATION, true, IDLE_ANCHOR_X, IDLE_FRAME_OFFSET_X, IDLE_FRAME_OFFSET_Y);
         walkAnimation = createAnimation(WALK_ROW, WALK_FRAME_COUNT, WALK_DURATION, true, WALK_ANCHOR_X, WALK_FRAME_OFFSET_X, WALK_FRAME_OFFSET_Y);
         hurtAnimation = createAnimation(HURT_ROW, HURT_FRAME_COUNT, HURT_DURATION, false, HURT_ANCHOR_X, HURT_FRAME_OFFSET_X, HURT_FRAME_OFFSET_Y);
-        attackAnimation = createAnimation(ATTACK_ROW, ATTACK_FRAME_COUNT, ATTACK_DURATION, false, ATTACK_ANCHOR_X, ATTACK_FRAME_OFFSET_X, ATTACK_FRAME_OFFSET_Y);
+        slash1Animation = createAnimation(ATTACK_ROW, 0, SLASH_FRAME_COUNT, SLASH_DURATION, false, SLASH_1_ANCHOR_X, SLASH_FRAME_OFFSET_X, SLASH_1_FRAME_OFFSET_Y);
+        slash2Animation = createAnimation(ATTACK_ROW, 3, SLASH_FRAME_COUNT, SLASH_DURATION, false, SLASH_2_ANCHOR_X, SLASH_FRAME_OFFSET_X, SLASH_2_FRAME_OFFSET_Y);
+        activeAttackAnimation = slash1Animation;
     }
 
     public void render(SpriteBatch batch, ModelPLAYER player, float delta) {
@@ -106,7 +121,7 @@ public class ViewPLAYER {
 
         if (animation == hurtAnimation) {
             drawY += HURT_DRAW_OFFSET_Y;
-        } else if (animation == attackAnimation) {
+        } else if (animation == activeAttackAnimation) {
             drawX += player.getFacing() * ATTACK_DRAW_OFFSET_X;
         }
 
@@ -226,6 +241,8 @@ public class ViewPLAYER {
         characterSheet.dispose();
         magicOrbTexture.dispose();
         laserTexture.dispose();
+        slash1Sound.dispose();
+        slash2Sound.dispose();
     }
 
     private void updateOneShotTimers(ModelPLAYER player, float delta) {
@@ -235,30 +252,41 @@ public class ViewPLAYER {
             hurtAnimationTime = 0f;
         }
 
-        if (player.getAttackId() != lastAttackId) {
-            lastAttackId = player.getAttackId();
-            attackAnimationTime = 0f;
-            attackVisualActive = true;
+        int swordAttackId = player.getSwordAttackId();
+        if (swordAttackId != lastSwordAttackId) {
+            lastSwordAttackId = swordAttackId;
+            if (swordAttackId > 0) {
+                boolean slash1 = player.getSwordSlashVariant() == 1;
+                activeAttackAnimation = slash1 ? slash1Animation : slash2Animation;
+                playSlashSound(slash1);
+                attackAnimationTime = 0f;
+                attackVisualActive = true;
+            }
         }
 
         if (attackVisualActive) {
             attackAnimationTime += delta;
-            if (attackAnimationTime >= ATTACK_DURATION) {
+            if (attackAnimationTime >= SLASH_DURATION) {
                 attackVisualActive = false;
             }
         }
     }
 
+    private void playSlashSound(boolean slash1) {
+        Sound sound = slash1 ? slash1Sound : slash2Sound;
+        sound.play(SLASH_SOUND_VOLUME);
+    }
+
     private SpriteAnimation selectAnimation(ModelPLAYER player) {
         if (player.isHurt()) return hurtAnimation;
-        if (attackVisualActive) return attackAnimation;
+        if (attackVisualActive) return activeAttackAnimation;
         if (player.isGrounded() && Math.abs(player.getVelocity().x) > 1f) return walkAnimation;
         return idleAnimation;
     }
 
     private float getStateTime(ModelPLAYER player, SpriteAnimation animation) {
         if (animation == hurtAnimation) return hurtAnimationTime;
-        if (animation == attackAnimation) return attackAnimationTime;
+        if (animation == activeAttackAnimation) return attackAnimationTime;
         if (animation == walkAnimation) {
             return animationTime * Math.max(0.65f, player.getMoveSpeed() / ModelPLAYER.MOVE_SPEED);
         }
@@ -277,11 +305,25 @@ public class ViewPLAYER {
         float[] frameOffsetX,
         float[] frameOffsetY
     ) {
+        return createAnimation(row, 0, frameCount, duration, looping, frameAnchorX, frameOffsetX, frameOffsetY);
+    }
+
+    private SpriteAnimation createAnimation(
+        int row,
+        int startColumn,
+        int frameCount,
+        float duration,
+        boolean looping,
+        float[] frameAnchorX,
+        float[] frameOffsetX,
+        float[] frameOffsetY
+    ) {
         SpriteFrame[] frames = new SpriteFrame[frameCount];
         for (int column = 0; column < frameCount; column++) {
-            int x = FRAME_BORDER_X[column] + FRAME_BORDER_INSET;
+            int sheetColumn = startColumn + column;
+            int x = FRAME_BORDER_X[sheetColumn] + FRAME_BORDER_INSET;
             int y = FRAME_BORDER_Y[row] + FRAME_BORDER_INSET;
-            int width = FRAME_BORDER_X[column + 1] - FRAME_BORDER_X[column] - FRAME_BORDER_INSET * 2;
+            int width = FRAME_BORDER_X[sheetColumn + 1] - FRAME_BORDER_X[sheetColumn] - FRAME_BORDER_INSET * 2;
             int height = FRAME_BORDER_Y[row + 1] - FRAME_BORDER_Y[row] - FRAME_BORDER_INSET * 2;
             TextureRegion region = new TextureRegion(
                 characterSheet,

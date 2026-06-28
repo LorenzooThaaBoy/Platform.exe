@@ -65,6 +65,8 @@ public class ModelPLAYER {
     private float dashTimer;
     private float dashCooldownTimer;
     private int attackId;
+    private int swordAttackId;
+    private int swordSlashVariant = 2;
     private int dashAttackId;
     private int dashDirection = 1;
     private int attackDirectionX = 1;
@@ -249,6 +251,7 @@ public class ModelPLAYER {
             attackTimer = ATTACK_DURATION;
             attackId++;
             swordAttackId = attackId;
+            swordSlashVariant = swordSlashVariant == 1 ? 2 : 1;
         }
     }
 
@@ -258,6 +261,10 @@ public class ModelPLAYER {
 
     public int getSwordAttackId() {
         return swordAttackId;
+    }
+
+    public int getSwordSlashVariant() {
+        return swordSlashVariant;
     }
 
     public float getSwordDamage() {
@@ -566,6 +573,7 @@ public class ModelPLAYER {
         dashCooldownTimer = 0f;
         attackId = 0;
         swordAttackId = 0;
+        swordSlashVariant = 2;
         dashAttackId = 0;
         dashDirection = 1;
         attackDirectionX = 1;
