@@ -248,11 +248,16 @@ public class ModelPLAYER {
             if (directionX != 0) facing = directionX;
             attackTimer = ATTACK_DURATION;
             attackId++;
+            swordAttackId = attackId;
         }
     }
 
     public int getAttackId() {
         return attackId;
+    }
+
+    public int getSwordAttackId() {
+        return swordAttackId;
     }
 
     public float getSwordDamage() {
@@ -560,6 +565,7 @@ public class ModelPLAYER {
         dashTimer = 0f;
         dashCooldownTimer = 0f;
         attackId = 0;
+        swordAttackId = 0;
         dashAttackId = 0;
         dashDirection = 1;
         attackDirectionX = 1;
