@@ -1,11 +1,12 @@
 package io.github.platform;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import java.util.EnumMap;
 
-//TODO: item sprites later
 public class ViewSHOP {
     //shop card layout
     private static final float CARD_WIDTH = 150f;
@@ -13,6 +14,15 @@ public class ViewSHOP {
     private static final float CARD_Y = 145f;
     private static final float FIRST_CARD_X = 125f;
     private static final float CARD_GAP = 35f;
+    private static final float ICON_SIZE = 62f;
+    private static final float ICON_Y = CARD_Y + 82f;
+
+    private final EnumMap<ModelSHOP.Item, Texture> itemTextures = new EnumMap<>(ModelSHOP.Item.class);
+
+    public ViewSHOP() {
+        itemTextures.put(ModelSHOP.Item.MAGIC_WAND, new Texture("MagicHat icon .png"));
+        itemTextures.put(ModelSHOP.Item.LIGHTNING, new Texture("lightningbolt icon .png"));
+    }
 
     public void render(ShapeRenderer shapes, ModelSHOP shop) {
         //shop background
@@ -29,9 +39,16 @@ public class ViewSHOP {
 
             shapes.setColor(shop.isItemSelected() && selected ? new Color(0.25f, 0.62f, 1f, 1f) : new Color(0.18f, 0.16f, 0.24f, 1f));
             shapes.rect(x, CARD_Y, CARD_WIDTH, CARD_HEIGHT);
+        }
+    }
 
-            shapes.setColor(new Color(0.7f, 0.7f, 0.78f, 1f));
-            shapes.rect(x + 45f, CARD_Y + 85f, 60f, 55f);
+    public void renderSprites(SpriteBatch batch, ModelSHOP shop) {
+        for (int i = 0; i < shop.getItems().length; i++) {
+            Texture itemTexture = itemTextures.get(shop.getItems()[i]);
+            if (itemTexture == null) continue;
+
+            float x = FIRST_CARD_X + i * (CARD_WIDTH + CARD_GAP);
+            drawCentered(batch, itemTexture, x + CARD_WIDTH / 2f, ICON_Y + ICON_SIZE / 2f, ICON_SIZE, ICON_SIZE);
         }
     }
 
@@ -52,5 +69,18 @@ public class ViewSHOP {
         } else {
             font.draw(batch, "A/D or Left/Right to choose, Space to buy", 245f, 95f);
         }
+    }
+
+    public void dispose() {
+        for (Texture texture : itemTextures.values()) {
+            texture.dispose();
+        }
+    }
+
+    private void drawCentered(SpriteBatch batch, Texture texture, float centerX, float centerY, float maxWidth, float maxHeight) {
+        float scale = Math.min(maxWidth / texture.getWidth(), maxHeight / texture.getHeight());
+        float width = texture.getWidth() * scale;
+        float height = texture.getHeight() * scale;
+        batch.draw(texture, centerX - width / 2f, centerY - height / 2f, width, height);
     }
 }

@@ -1,9 +1,9 @@
 # Platformer THE GAME 
 
 ## Game idea 
-Platformer THE GAME is a small 2D arena platformer. The player moves across a compact platform map, jumps between ledges, and fights enemies with a short melee attack while trying to stay alive with a limited number of lives.
+Platformer THE GAME is a small 2D arena platformer. The player moves across a compact platform map, jumps between ledges, and fights enemies while trying to stay alive with a limited number of lives.
 
-The current idea is to grow the game into round-based survival: enemies spawn from different sides of the map, chase the player, and deal damage on contact. After surviving rounds, the player should be able to enter a shop and buy upgrades such as more damage, more range, extra HP, more speed, or a dash. 
+Enemies spawn from different sides of the map, chase the player, and deal damage on contact. After surviving rounds, the player is able to enter a shop and buy upgrades such as more damage, more range, extra HP, more speed or a primary and secondary item that aids the player by giving certain abilites (like dash or brimstone) that hlp to fight the enemies. 
 
 ## Development 
 ### Code Strucutre
@@ -17,7 +17,7 @@ We deployed the MCV pattern for easy class overview aswell as it being industry 
 <img width="1692" height="453" alt="IMG_5908" src="https://github.com/user-attachments/assets/3b5bf9e4-9bf4-4a26-9b5b-9b5c306f089d" />
 
 
-**IMPORTANT NOTE!!!: Most of the code changes were contributed through lorenzoothaaboy as we were pair-programming over discord or in class and it was just more convenient to do most of the work like _this._**
+**IMPORTANT NOTE: Most of the code changes were contributed through lorenzoothaaboy as we were pair-programming over discord or in class and it was just more convenient to do most of the work like this, also due some technical issues on kilijon's (killian) side this generally was the most practical way to develop.**
 
 ## Usage of Artifical Intelligence 
 We used OpenAi's Codex to write code in this project and help with sprite generation and in the general game development process

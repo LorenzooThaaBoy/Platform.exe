@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 public class ModelPLAYER {
     //equipped item types
     public enum PrimaryItem {
-        NONE, MAGIC_HAT
+        NONE, MAGIC_WAND
     }
 
     public enum SecondaryItem {

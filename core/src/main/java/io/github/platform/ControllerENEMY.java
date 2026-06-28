@@ -114,7 +114,7 @@ public class ControllerENEMY {
                 }
             }
 
-            if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT
+            if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_WAND
                 && controllerPlayer.getMagicOrbBounds().overlaps(enemy.getBounds())) {
                 if (damageEnemy(enemy, controllerPlayer.getMagicOrbDamage(player), controllerPlayer.getMagicOrbAttackId(), player)) {
                     enemies.removeIndex(i);

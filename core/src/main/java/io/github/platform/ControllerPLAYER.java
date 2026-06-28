@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 //player input + movement controller
 public class ControllerPLAYER {
-    //magic hat orb stats
+    //magic wand orb stats
     private static final float MAGIC_ORB_SIZE = 18f;
     private static final float MAGIC_ORB_BASE_SPEED = 185f;
     private static final float MAGIC_ORB_BASE_DPS = 2f;
@@ -66,7 +66,7 @@ public class ControllerPLAYER {
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) magicOrbDirectionY += 1f;
         updateMagicOrb(player, magicOrbDirectionX, magicOrbDirectionY, delta);
 
-        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT) {
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_WAND) {
             moveAndCollide(player, map, delta);
             return;
         }
@@ -119,8 +119,8 @@ public class ControllerPLAYER {
     }
 
     private void updateMagicOrb(ModelPLAYER player, float directionX, float directionY, float delta) {
-        //only exists with magic hat
-        if (player.getPrimaryItem() != ModelPLAYER.PrimaryItem.MAGIC_HAT) {
+        //only exists with magic wand
+        if (player.getPrimaryItem() != ModelPLAYER.PrimaryItem.MAGIC_WAND) {
             magicOrbBounds.set(0f, 0f, 0f, 0f);
             return;
         }

@@ -17,7 +17,7 @@ import com.esotericsoftware.spine.Skin;
 import com.esotericsoftware.spine.SlotData;
 import com.esotericsoftware.spine.attachments.RegionAttachment;
 
-//TODO: tune skeleton sprite positions if sprites change
+//TODO: tune skeleton sprite positions if sprites change or unimplement spine and use simple sprite batch draw calls instead
 public class ViewPLAYER {
     //body part sizes and rotations
     private static final int SPRITE_FACING_OFFSET = -1;
@@ -45,6 +45,7 @@ public class ViewPLAYER {
     private static final float FRONT_FOREARM_READY_ROTATION = 0f;
     private static final float SWORD_READY_ROTATION = 38f;
     private static final float UPPER_ARM_BAR_THICKNESS = 3f;
+    private static final float MAGIC_ORB_RENDER_SIZE_MULTIPLIER = 1.5f;
 
     private final Texture blockTexture;
     private final TextureRegion blockRegion;
@@ -55,6 +56,7 @@ public class ViewPLAYER {
     private final Texture upperLegTexture;
     private final Texture lowerLegTexture;
     private final Texture swordTexture;
+    private final Texture magicOrbTexture;
     private final TextureRegion headRegion;
     private final TextureRegion torsoRegion;
     private final TextureRegion shoulderRegion;
@@ -92,6 +94,7 @@ public class ViewPLAYER {
         upperLegTexture = new Texture("UpperLeg.PNG");
         lowerLegTexture = new Texture("LowerLeg.PNG");
         swordTexture = new Texture("Sword.PNG");
+        magicOrbTexture = new Texture("MagicOrbSprite.png");
         headRegion = new TextureRegion(headTexture);
         torsoRegion = new TextureRegion(torsoTexture);
         shoulderRegion = new TextureRegion(shoulderTexture);
@@ -131,6 +134,17 @@ public class ViewPLAYER {
 
         poseSkeleton(player);
         skeletonRenderer.draw(batch, skeleton);
+    }
+
+    public void renderMagicOrb(SpriteBatch batch, ModelPLAYER player, Rectangle magicOrbBounds) {
+        if (player.getPrimaryItem() != ModelPLAYER.PrimaryItem.MAGIC_WAND) return;
+        if (magicOrbBounds.width <= 0f) return;
+
+        float width = magicOrbBounds.width * MAGIC_ORB_RENDER_SIZE_MULTIPLIER;
+        float height = magicOrbBounds.height * MAGIC_ORB_RENDER_SIZE_MULTIPLIER;
+        float x = magicOrbBounds.x + magicOrbBounds.width / 2f - width / 2f;
+        float y = magicOrbBounds.y + magicOrbBounds.height / 2f - height / 2f;
+        batch.draw(magicOrbTexture, x, y, width, height);
     }
 
     public void renderHitboxes(ShapeRenderer shapes, ModelPLAYER player) {
@@ -183,6 +197,7 @@ public class ViewPLAYER {
         upperLegTexture.dispose();
         lowerLegTexture.dispose();
         swordTexture.dispose();
+        magicOrbTexture.dispose();
     }
 
     private void poseSkeleton(ModelPLAYER player) {

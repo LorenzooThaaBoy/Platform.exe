@@ -26,6 +26,8 @@ public class ViewMain extends ApplicationAdapter {
     private SpriteBatch batch;
     private BitmapFont font;
     private Texture heartTexture;
+    private Texture magicWandTexture;
+    private Texture lightningTexture;
 
     private ModelGAME game;
     private ModelMAP map;
@@ -51,6 +53,8 @@ public class ViewMain extends ApplicationAdapter {
         batch = new SpriteBatch();
         font = new BitmapFont();
         heartTexture = new Texture("Hrat.png");
+        magicWandTexture = new Texture("MagicHat icon .png");
+        lightningTexture = new Texture("lightningbolt icon .png");
 
         game = new ModelGAME();
         map = new ModelMAP();
@@ -101,10 +105,13 @@ public class ViewMain extends ApplicationAdapter {
         viewMap.dispose();
         viewPlayer.dispose();
         viewEnemy.dispose();
+        viewShop.dispose();
         shapes.dispose();
         batch.dispose();
         font.dispose();
         heartTexture.dispose();
+        magicWandTexture.dispose();
+        lightningTexture.dispose();
     }
 
     private void renderGame(float delta) {
@@ -117,9 +124,15 @@ public class ViewMain extends ApplicationAdapter {
 
         batch.begin();
         renderLives();
+        if (game.isShop()) {
+            viewShop.renderSprites(batch, shop);
+        }
         renderText();
         if (game.isShop()) {
             viewShop.renderText(batch, font, shop, player, controllerEnemy.getWave() + 1);
+        }
+        if (shouldRenderItemSlots()) {
+            renderItemSlotSprites();
         }
         batch.end();
     }
@@ -149,12 +162,12 @@ public class ViewMain extends ApplicationAdapter {
         batch.begin();
         viewEnemy.renderSprites(batch, controllerEnemy);
         viewPlayer.render(batch, player, game.isPaused() ? 0f : delta);
+        viewPlayer.renderMagicOrb(batch, player, controllerPlayer.getMagicOrbBounds());
         batch.end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         viewPlayer.renderHitboxes(shapes, player);
-        renderMagicOrb();
         if (shouldRenderItemSlots()) {
             renderItemSlots();
         }
@@ -245,20 +258,6 @@ public class ViewMain extends ApplicationAdapter {
         }
     }
 
-    private void renderMagicOrb() {
-        if (player.getPrimaryItem() != ModelPLAYER.PrimaryItem.MAGIC_HAT) return;
-
-        Rectangle magicOrbBounds = controllerPlayer.getMagicOrbBounds();
-        if (magicOrbBounds.width <= 0f) return;
-
-        shapes.setColor(new Color(0.25f, 0.55f, 1f, 0.8f));
-        shapes.circle(
-            magicOrbBounds.x + magicOrbBounds.width / 2f,
-            magicOrbBounds.y + magicOrbBounds.height / 2f,
-            magicOrbBounds.width / 2f
-        );
-    }
-
     private boolean shouldRenderItemSlots() {
         return game.isPlaying() || game.isPaused();
     }
@@ -271,12 +270,24 @@ public class ViewMain extends ApplicationAdapter {
     }
 
     private void renderItemSlotText() {
-        font.draw(batch, getPrimaryItemLabel(), PRIMARY_ITEM_SLOT.x + 8f, PRIMARY_ITEM_SLOT.y + 25f);
-        font.draw(batch, getSecondaryItemLabel(), SECONDARY_ITEM_SLOT.x + 8f, SECONDARY_ITEM_SLOT.y + 25f);
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.NONE) {
+            font.draw(batch, "-", PRIMARY_ITEM_SLOT.x + 17f, PRIMARY_ITEM_SLOT.y + 25f);
+        }
+
+        if (player.getSecondaryItem() == ModelPLAYER.SecondaryItem.NONE
+            || player.getSecondaryItem() == ModelPLAYER.SecondaryItem.BRIMSTONE) {
+            font.draw(batch, getSecondaryItemLabel(), SECONDARY_ITEM_SLOT.x + 17f, SECONDARY_ITEM_SLOT.y + 25f);
+        }
     }
 
-    private String getPrimaryItemLabel() {
-        return player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_HAT ? "H" : "-";
+    private void renderItemSlotSprites() {
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_WAND) {
+            drawCentered(magicWandTexture, PRIMARY_ITEM_SLOT);
+        }
+
+        if (player.getSecondaryItem() == ModelPLAYER.SecondaryItem.LIGHTNING) {
+            drawCentered(lightningTexture, SECONDARY_ITEM_SLOT);
+        }
     }
 
     private String getSecondaryItemLabel() {
@@ -288,5 +299,21 @@ public class ViewMain extends ApplicationAdapter {
             default:
                 return "-";
         }
+    }
+
+    private void drawCentered(Texture texture, Rectangle bounds) {
+        float padding = 5f;
+        float maxWidth = bounds.width - padding * 2f;
+        float maxHeight = bounds.height - padding * 2f;
+        float scale = Math.min(maxWidth / texture.getWidth(), maxHeight / texture.getHeight());
+        float width = texture.getWidth() * scale;
+        float height = texture.getHeight() * scale;
+        batch.draw(
+            texture,
+            bounds.x + bounds.width / 2f - width / 2f,
+            bounds.y + bounds.height / 2f - height / 2f,
+            width,
+            height
+        );
     }
 }
