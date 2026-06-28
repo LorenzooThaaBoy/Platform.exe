@@ -21,7 +21,7 @@ We deployed the MCV pattern for easy class overview aswell as it being industry 
 **IMPORTANT NOTE: Most of the code changes were contributed through lorenzoothaaboy as we were pair-programming over discord or in class and it was just more convenient to do most of the work like this, also due some technical issues on kilijon's (kilian) side this generally was the most practical way to develop.**
 
 ## Usage of Artifical Intelligence 
-We used OpenAi's Codex to write code in this project and help with sprite generation and in the general game development process
+We used OpenAi's Codex to write code in this project, help with sprite generation and in the general game development process
 
 ## Overview of the game from a developmetal standpoint 
 ![alt text](IMG_5910.jpg)
