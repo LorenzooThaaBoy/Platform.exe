@@ -15,7 +15,9 @@ public class ModelSHOP {
         HP_UP("HP Up", player -> "+1 heart, full heal", ModelPLAYER::upgradeHealth),
         SPEED_UP("Speed Up", player -> player.canUpgradeSpeed() ? "x" + player.getNextSpeedMultiplier() + " speed" : "Max speed", ModelPLAYER::upgradeSpeed),
         DASH("Dash", player -> player.canUpgradeDash() ? (int)player.getNextDashSpeed() + " dash, " + player.getNextDashDamage() + " dmg" : "Max dash", ModelPLAYER::upgradeDash),
-        MAGIC_WAND("Magic Wand", player -> "Primary: arrow orb", player -> player.equipPrimaryItem(ModelPLAYER.PrimaryItem.MAGIC_WAND)),
+        MAGIC_WAND("Magic Wand", player -> player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_WAND
+            ? player.canUpgradeMagicOrb() ? "x" + player.getNextMagicOrbMultiplier() + " orb dmg" : "Max orb"
+            : "Primary: arrow orb", ModelPLAYER::buyMagicWand),
         LIGHTNING("Lightning", player -> "Secondary: C zap", player -> player.equipSecondaryItem(ModelPLAYER.SecondaryItem.LIGHTNING)),
         SCATTER("Scatter", player -> player.hasScatter() ? "Owned passive" : "Passive death burst", ModelPLAYER::unlockScatter),
         LASER("Laser", player -> "Secondary: hold C", player -> player.equipSecondaryItem(ModelPLAYER.SecondaryItem.LASER));

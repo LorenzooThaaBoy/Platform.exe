@@ -38,6 +38,7 @@ public class ModelPLAYER {
     private static final float MAGIC_ORB_BASE_DPS = 2f;
     private static final float MAGIC_ORB_DAMAGE_INTERVAL = 0.25f;
     private static final float[] DAMAGE_MULTIPLIERS = {1f, 1.2f, 1.7f, 2.3f, 3f};
+    private static final float[] MAGIC_ORB_MULTIPLIERS = {1f, 1.35f, 1.8f, 2.4f, 3.2f};
     private static final float[] RANGE_BONUSES = {0f, 14f, 28f, 44f, 62f};
     private static final float[] SPEED_MULTIPLIERS = {1f, 1.15f, 1.32f, 1.5f, 1.7f};
     private static final float[] DASH_SPEEDS = {0f, 520f, 650f, 780f, 930f};
@@ -69,6 +70,7 @@ public class ModelPLAYER {
     private int attackDirectionX = 1;
     private int attackDirectionY;
     private int damageLevel;
+    private int magicOrbLevel;
     private int rangeLevel;
     private int speedLevel;
     private int dashLevel;
@@ -146,7 +148,7 @@ public class ModelPLAYER {
     }
 
     public float getMagicOrbDamage() {
-        return MAGIC_ORB_BASE_DPS * MAGIC_ORB_DAMAGE_INTERVAL * getSwordDamage();
+        return MAGIC_ORB_BASE_DPS * MAGIC_ORB_DAMAGE_INTERVAL * DAMAGE_MULTIPLIERS[damageLevel] * MAGIC_ORB_MULTIPLIERS[magicOrbLevel];
     }
 
     public int getMagicOrbAttackId() {
@@ -277,6 +279,10 @@ public class ModelPLAYER {
         return damageLevel;
     }
 
+    public int getMagicOrbLevel() {
+        return magicOrbLevel;
+    }
+
     public int getRangeLevel() {
         return rangeLevel;
     }
@@ -291,6 +297,10 @@ public class ModelPLAYER {
 
     public float getNextDamageMultiplier() {
         return DAMAGE_MULTIPLIERS[Math.min(damageLevel + 1, DAMAGE_MULTIPLIERS.length - 1)];
+    }
+
+    public float getNextMagicOrbMultiplier() {
+        return MAGIC_ORB_MULTIPLIERS[Math.min(magicOrbLevel + 1, MAGIC_ORB_MULTIPLIERS.length - 1)];
     }
 
     public float getNextRangeBonus() {
@@ -311,6 +321,10 @@ public class ModelPLAYER {
 
     public boolean canUpgradeDamage() {
         return damageLevel < DAMAGE_MULTIPLIERS.length - 1;
+    }
+
+    public boolean canUpgradeMagicOrb() {
+        return magicOrbLevel < MAGIC_ORB_MULTIPLIERS.length - 1;
     }
 
     public boolean canUpgradeRange() {
@@ -466,6 +480,10 @@ public class ModelPLAYER {
         if (canUpgradeDamage()) damageLevel++;
     }
 
+    public void upgradeMagicOrb() {
+        if (canUpgradeMagicOrb()) magicOrbLevel++;
+    }
+
     public void upgradeRange() {
         if (canUpgradeRange()) rangeLevel++;
     }
@@ -486,6 +504,15 @@ public class ModelPLAYER {
     public void equipPrimaryItem(PrimaryItem primaryItem) {
         this.primaryItem = primaryItem;
         attackTimer = 0f;
+    }
+
+    public void buyMagicWand() {
+        if (primaryItem == PrimaryItem.MAGIC_WAND) {
+            upgradeMagicOrb();
+            return;
+        }
+
+        equipPrimaryItem(PrimaryItem.MAGIC_WAND);
     }
 
     public void equipSecondaryItem(SecondaryItem secondaryItem) {
@@ -521,6 +548,7 @@ public class ModelPLAYER {
         attackDirectionX = 1;
         attackDirectionY = 0;
         damageLevel = 0;
+        magicOrbLevel = 0;
         rangeLevel = 0;
         speedLevel = 0;
         dashLevel = 0;
