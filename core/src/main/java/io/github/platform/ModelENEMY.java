@@ -12,6 +12,7 @@ public class ModelENEMY {
     private final float speed;
     private float hitPoints;
     private int lastHitAttackId = -1;
+    private int facing = 1;
 
     public ModelENEMY(float x, float y, int hitPoints, float speed) {
         bounds = new Rectangle(x, y, SIZE, SIZE);
@@ -25,6 +26,10 @@ public class ModelENEMY {
 
     public boolean isAlive() {
         return alive;
+    }
+
+    public int getFacing() {
+        return facing;
     }
 
     public void takeDamage(float damage, int attackId) {
@@ -42,6 +47,9 @@ public class ModelENEMY {
         float targetCenterY = target.y + target.height / 2f;
         float enemyCenterX = bounds.x + bounds.width / 2f;
         float enemyCenterY = bounds.y + bounds.height / 2f;
+
+        if (targetCenterX > enemyCenterX) facing = 1;
+        if (targetCenterX < enemyCenterX) facing = -1;
 
         velocity.set(targetCenterX - enemyCenterX, targetCenterY - enemyCenterY);
         if (velocity.len2() > 0.01f) {

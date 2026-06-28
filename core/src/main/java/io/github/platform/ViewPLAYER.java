@@ -1,139 +1,129 @@
 package io.github.platform;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.esotericsoftware.spine.Bone;
-import com.esotericsoftware.spine.BoneData;
-import com.esotericsoftware.spine.Skeleton;
-import com.esotericsoftware.spine.SkeletonData;
-import com.esotericsoftware.spine.SkeletonRenderer;
-import com.esotericsoftware.spine.Skin;
-import com.esotericsoftware.spine.SlotData;
-import com.esotericsoftware.spine.attachments.RegionAttachment;
 
-//TODO: tune skeleton sprite positions if sprites change or unimplement spine and use simple sprite batch draw calls instead
 public class ViewPLAYER {
-    //body part sizes and rotations
-    private static final int SPRITE_FACING_OFFSET = -1;
-    private static final float TORSO_LENGTH = 34f;
-    private static final float HEAD_LENGTH = 16f;
-    private static final float SHOULDER_LENGTH = 15f;
-    private static final float SHOULDER_SCALE_X = 1.5f;
-    private static final float SHOULDER_SCALE_Y = 1.5f;
-    private static final float UPPER_ARM_LENGTH = 20f;
-    private static final float LOWER_ARM_LENGTH = 25f;
-    private static final float ARM_FORWARD = -1f;
-    private static final float HAND_JOINT_DISTANCE = 16f;
-    private static final float UPPER_LEG_LENGTH = 20f;
-    private static final float LOWER_LEG_LENGTH = 19f;
-    private static final float SWORD_LENGTH = 34f;
-    private static final float TORSO_ROTATION = 0f;
-    private static final float HEAD_ROTATION = 0f;
-    private static final float SHOULDER_ROTATION = -90f;
-    private static final float LOWER_ARM_ROTATION = 0f;
-    private static final float UPPER_LEG_ROTATION = 0f;
-    private static final float LOWER_LEG_ROTATION = 0f;
-    private static final float SWORD_ROTATION = 45f;
-    private static final float ATTACK_ANIMATION_DURATION = 0.32f;
-    private static final float FRONT_UPPER_ARM_READY_ROTATION = 40f;
-    private static final float FRONT_FOREARM_READY_ROTATION = 0f;
-    private static final float SWORD_READY_ROTATION = 38f;
-    private static final float UPPER_ARM_BAR_THICKNESS = 3f;
+    /*
+     * Spritesheet tuning:
+     * - The bordered guide sheet marks 6 columns x 4 rows.
+     * - Change FRAME_BORDER_X/Y if a new export moves the frame borders.
+     * - Change *_FRAME_COUNT and *_DURATION to use fewer/more poses or make animations faster.
+     * - Change DRAW_* and BODY_* when the art size should match the player hitbox differently.
+     * - *_FRAME_OFFSET_* is for tiny per-frame fixes if one pose still slides.
+     */
+    private static final String CHARACTER_SHEET_PATH = "character_sprite_sheet.png";
+    private static final int[] FRAME_BORDER_X = {32, 418, 797, 1175, 1555, 1933, 2318};
+    private static final int[] FRAME_BORDER_Y = {32, 405, 772, 1163, 1530};
+    private static final int FRAME_BORDER_INSET = 5;
+
+    private static final int IDLE_ROW = 0;
+    private static final int WALK_ROW = 1;
+    private static final int HURT_ROW = 2;
+    private static final int ATTACK_ROW = 3;
+
+    private static final int IDLE_FRAME_COUNT = 5;
+    private static final int WALK_FRAME_COUNT = 6;
+    private static final int HURT_FRAME_COUNT = 4;
+    private static final int ATTACK_FRAME_COUNT = 6;
+
+    private static final float IDLE_DURATION = 0.70f;
+    private static final float WALK_DURATION = 0.55f;
+    private static final float HURT_DURATION = 0.75f;
+    private static final float ATTACK_DURATION = 0.58f;
+
+    private static final boolean ANIMATE_IDLE_WHEN_STANDING = true;
+    private static final boolean APPLY_FRAME_OFFSETS = true;
+    private static final float BODY_ANCHOR_X = 37f;
+    private static final float[] IDLE_ANCHOR_X = {164.5f, 153f, 144.5f, 141f, 134f};
+    private static final float[] WALK_ANCHOR_X = {151f, 155f, 137.5f, 129.5f, 145f, 121f};
+    private static final float[] HURT_ANCHOR_X = {209f, 197f, 194.5f, 195f};
+    private static final float[] ATTACK_ANCHOR_X = {83.5f, 80f, 80.5f, 158.5f, 142.5f, 110f};
+    private static final float[] IDLE_FRAME_OFFSET_X = {0f, 0f, 0f, 0f, 0f}; // for each frame a seperate offset
+    private static final float[] WALK_FRAME_OFFSET_X = {.3f, 1f, 0f, 0f, 0f, 0f};
+    private static final float[] HURT_FRAME_OFFSET_X = {0f, 0f, 0f, 0f};
+    private static final float[] ATTACK_FRAME_OFFSET_X = {0f, 0f, 0f, 0f, 0f, 0f};
+    private static final float[] IDLE_FRAME_OFFSET_Y = {0f, -.5f, -.5f, -.5f, -.5f};
+    private static final float[] WALK_FRAME_OFFSET_Y = {0f, 0f, 0f, 0f, 0f, 0f};
+    private static final float[] HURT_FRAME_OFFSET_Y = {3f, 3.5f, 3.5f, 3.5f};
+    private static final float[] ATTACK_FRAME_OFFSET_Y = {0f, 0f, -.5f, -0f, -0f, 0f};
+
+    private static final float DRAW_WIDTH = 84f;
+    private static final float DRAW_HEIGHT = 84f;
+    private static final float BODY_OFFSET_X = DRAW_WIDTH / 2f - BODY_ANCHOR_X;
+    private static final float BODY_OFFSET_Y = -7f;
+    private static final float HURT_DRAW_OFFSET_Y = -3f;
+    private static final float ATTACK_DRAW_OFFSET_X = 0f;
     private static final float MAGIC_ORB_RENDER_SIZE_MULTIPLIER = 1.5f;
+    private static final float LASER_DRAW_HEIGHT = 44f;
+    private static final float LASER_IMPACT_WIDTH = 92f;
+    private static final float LASER_IMPACT_HEIGHT = 48f;
 
-    private final Texture blockTexture;
-    private final TextureRegion blockRegion;
-    private final Texture headTexture;
-    private final Texture torsoTexture;
-    private final Texture shoulderTexture;
-    private final Texture lowerArmTexture;
-    private final Texture upperLegTexture;
-    private final Texture lowerLegTexture;
-    private final Texture swordTexture;
+    private final Texture characterSheet;
     private final Texture magicOrbTexture;
-    private final TextureRegion headRegion;
-    private final TextureRegion torsoRegion;
-    private final TextureRegion shoulderRegion;
-    private final TextureRegion lowerArmRegion;
-    private final TextureRegion upperLegRegion;
-    private final TextureRegion lowerLegRegion;
-    private final TextureRegion swordRegion;
-    private final SkeletonRenderer skeletonRenderer;
-    private final Skeleton skeleton;
-
-    private final Bone root;
-    private final Bone torso;
-    private final Bone head;
-    private final Bone backUpperArm;
-    private final Bone backForearm;
-    private final Bone frontUpperArm;
-    private final Bone frontForearm;
-    private final Bone sword;
-    private final Bone backUpperLeg;
-    private final Bone backLowerLeg;
-    private final Bone frontUpperLeg;
-    private final Bone frontLowerLeg;
+    private final Texture laserTexture;
+    private final TextureRegion laserBeamRegion;
+    private final TextureRegion laserImpactRegion;
+    private final SpriteAnimation idleAnimation;
+    private final SpriteAnimation walkAnimation;
+    private final SpriteAnimation hurtAnimation;
+    private final SpriteAnimation attackAnimation;
 
     private float animationTime;
+    private float hurtAnimationTime;
     private float attackAnimationTime;
+    private int lastAttackId;
+    private boolean attackVisualActive;
 
     public ViewPLAYER() {
-        //load player sprite parts
-        blockTexture = createWhitePixelTexture();
-        blockRegion = new TextureRegion(blockTexture);
-        headTexture = new Texture("Head.PNG");
-        torsoTexture = new Texture("Torso.PNG");
-        shoulderTexture = new Texture("Leftshoulder.PNG");
-        lowerArmTexture = new Texture("Lower Arm.PNG");
-        upperLegTexture = new Texture("UpperLeg.PNG");
-        lowerLegTexture = new Texture("LowerLeg.PNG");
-        swordTexture = new Texture("Sword.PNG");
+        characterSheet = new Texture(CHARACTER_SHEET_PATH);
+        characterSheet.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         magicOrbTexture = new Texture("MagicOrbSprite.png");
-        headRegion = new TextureRegion(headTexture);
-        torsoRegion = new TextureRegion(torsoTexture);
-        shoulderRegion = new TextureRegion(shoulderTexture);
-        lowerArmRegion = new TextureRegion(lowerArmTexture);
-        upperLegRegion = new TextureRegion(upperLegTexture);
-        lowerLegRegion = new TextureRegion(lowerLegTexture);
-        swordRegion = new TextureRegion(swordTexture);
-        skeletonRenderer = new SkeletonRenderer();
-        skeletonRenderer.setPremultipliedAlpha(false);
+        laserTexture = new Texture("texture_laser.png");
+        laserBeamRegion = new TextureRegion(laserTexture, 154, 677, 70, 626);
+        laserImpactRegion = new TextureRegion(laserTexture, 477, 519, 138, 71);
 
-        skeleton = new Skeleton(createPrototypeSkeletonData());
-        skeleton.setSkin("default");
-        skeleton.setSlotsToSetupPose();
-
-        root = skeleton.findBone("root");
-        torso = skeleton.findBone("torso");
-        head = skeleton.findBone("head");
-        backUpperArm = skeleton.findBone("back-upper-arm");
-        backForearm = skeleton.findBone("back-forearm");
-        frontUpperArm = skeleton.findBone("front-upper-arm");
-        frontForearm = skeleton.findBone("front-forearm");
-        sword = skeleton.findBone("sword");
-        backUpperLeg = skeleton.findBone("back-upper-leg");
-        backLowerLeg = skeleton.findBone("back-lower-leg");
-        frontUpperLeg = skeleton.findBone("front-upper-leg");
-        frontLowerLeg = skeleton.findBone("front-lower-leg");
+        idleAnimation = createAnimation(IDLE_ROW, IDLE_FRAME_COUNT, IDLE_DURATION, true, IDLE_ANCHOR_X, IDLE_FRAME_OFFSET_X, IDLE_FRAME_OFFSET_Y);
+        walkAnimation = createAnimation(WALK_ROW, WALK_FRAME_COUNT, WALK_DURATION, true, WALK_ANCHOR_X, WALK_FRAME_OFFSET_X, WALK_FRAME_OFFSET_Y);
+        hurtAnimation = createAnimation(HURT_ROW, HURT_FRAME_COUNT, HURT_DURATION, false, HURT_ANCHOR_X, HURT_FRAME_OFFSET_X, HURT_FRAME_OFFSET_Y);
+        attackAnimation = createAnimation(ATTACK_ROW, ATTACK_FRAME_COUNT, ATTACK_DURATION, false, ATTACK_ANCHOR_X, ATTACK_FRAME_OFFSET_X, ATTACK_FRAME_OFFSET_Y);
     }
 
     public void render(SpriteBatch batch, ModelPLAYER player, float delta) {
-        //animation timers only
         animationTime += delta;
-        if (player.isAttacking()) {
-            attackAnimationTime += delta;
-        } else {
-            attackAnimationTime = 0f;
+        updateOneShotTimers(player, delta);
+
+        SpriteAnimation animation = selectAnimation(player);
+        float stateTime = getStateTime(player, animation);
+        SpriteFrame frame = animation.getKeyFrame(stateTime);
+
+        float drawX = player.getBounds().x + player.getBounds().width / 2f - DRAW_WIDTH / 2f
+            + BODY_OFFSET_X + frame.getOffsetX(player.getFacing());
+        float drawY = player.getBounds().y + BODY_OFFSET_Y + frame.offsetY;
+
+        if (animation == hurtAnimation) {
+            drawY += HURT_DRAW_OFFSET_Y;
+        } else if (animation == attackAnimation) {
+            drawX += player.getFacing() * ATTACK_DRAW_OFFSET_X;
         }
 
-        poseSkeleton(player);
-        skeletonRenderer.draw(batch, skeleton);
+        if (player.isHurt()) {
+            batch.setColor(1f, 0.55f, 0.55f, 1f);
+        }
+
+        if (player.getFacing() < 0) {
+            batch.draw(frame.region, drawX + frame.drawWidth, drawY, -frame.drawWidth, frame.drawHeight);
+        } else {
+            batch.draw(frame.region, drawX, drawY, frame.drawWidth, frame.drawHeight);
+        }
+
+        if (player.isHurt()) {
+            batch.setColor(Color.WHITE);
+        }
     }
 
     public void renderMagicOrb(SpriteBatch batch, ModelPLAYER player, Rectangle magicOrbBounds) {
@@ -147,8 +137,93 @@ public class ViewPLAYER {
         batch.draw(magicOrbTexture, x, y, width, height);
     }
 
+    public void renderLaser(SpriteBatch batch, ModelPLAYER player) {
+        if (!player.isLaserBeamActive()) return;
+
+        Rectangle beamBounds = player.getLaserBeamBounds();
+        float beamLength = beamBounds.width;
+        float centerY = beamBounds.y + beamBounds.height / 2f;
+        float impactX;
+
+        if (player.getLaserDirection() > 0) {
+            impactX = beamBounds.x + beamLength;
+            if (beamLength > 0f) {
+                batch.draw(
+                    laserBeamRegion,
+                    beamBounds.x,
+                    centerY + LASER_DRAW_HEIGHT / 2f,
+                    0f,
+                    0f,
+                    LASER_DRAW_HEIGHT,
+                    beamLength,
+                    1f,
+                    1f,
+                    -90f
+                );
+            }
+            drawLaserImpact(batch, player, impactX, centerY);
+        } else {
+            impactX = beamBounds.x;
+            if (beamLength > 0f) {
+                batch.draw(
+                    laserBeamRegion,
+                    beamBounds.x + beamLength,
+                    centerY - LASER_DRAW_HEIGHT / 2f,
+                    0f,
+                    0f,
+                    LASER_DRAW_HEIGHT,
+                    beamLength,
+                    1f,
+                    1f,
+                    90f
+                );
+            }
+            drawLaserImpact(batch, player, impactX, centerY);
+        }
+    }
+
+    private void drawLaserImpact(SpriteBatch batch, ModelPLAYER player, float impactX, float centerY) {
+        if (player.isLaserImpactEnemyHit()) {
+            float width = LASER_IMPACT_HEIGHT;
+            float height = LASER_IMPACT_WIDTH;
+            float direction = player.getLaserDirection();
+            float drawX = impactX - width / 2f + direction * width * 0.25f;
+            float drawY = centerY - height / 2f;
+            batch.draw(
+                laserImpactRegion,
+                drawX,
+                drawY,
+                width / 2f,
+                height / 2f,
+                width,
+                height,
+                1f,
+                1f,
+                direction > 0f ? -90f : 90f
+            );
+            return;
+        }
+
+        if (player.getLaserDirection() > 0) {
+            batch.draw(
+                laserImpactRegion,
+                impactX - LASER_IMPACT_WIDTH * 0.35f,
+                centerY - LASER_IMPACT_HEIGHT / 2f,
+                LASER_IMPACT_WIDTH,
+                LASER_IMPACT_HEIGHT
+            );
+        } else {
+            batch.draw(
+                laserImpactRegion,
+                impactX + LASER_IMPACT_WIDTH * 0.35f,
+                centerY - LASER_IMPACT_HEIGHT / 2f,
+                -LASER_IMPACT_WIDTH,
+                LASER_IMPACT_HEIGHT
+            );
+        }
+    }
+
     public void renderHitboxes(ShapeRenderer shapes, ModelPLAYER player) {
-        //player + attack boxes
         if (player.isHurt()) {
             shapes.setColor(new Color(1f, 0.35f, 0.35f, 0.35f));
         } else {
@@ -176,248 +251,146 @@ public class ViewPLAYER {
             );
         }
 
-        if (player.isBrimstoneBeamActive()) {
-            Rectangle brimstoneBeamBounds = player.getBrimstoneBeamBounds();
-            shapes.setColor(new Color(1f, 0.28f, 0.05f, 0.65f));
+        if (player.isLaserBeamActive()) {
+            Rectangle laserBeamBounds = player.getLaserBeamBounds();
+            shapes.setColor(new Color(1f, 0.18f, 0.08f, 0.65f));
             shapes.rect(
-                brimstoneBeamBounds.x,
-                brimstoneBeamBounds.y,
-                brimstoneBeamBounds.width,
-                brimstoneBeamBounds.height
+                laserBeamBounds.x,
+                laserBeamBounds.y,
+                laserBeamBounds.width,
+                laserBeamBounds.height
             );
         }
     }
 
     public void dispose() {
-        blockTexture.dispose();
-        headTexture.dispose();
-        torsoTexture.dispose();
-        shoulderTexture.dispose();
-        lowerArmTexture.dispose();
-        upperLegTexture.dispose();
-        lowerLegTexture.dispose();
-        swordTexture.dispose();
+        characterSheet.dispose();
         magicOrbTexture.dispose();
+        laserTexture.dispose();
     }
 
-    private void poseSkeleton(ModelPLAYER player) {
-        //reset pose then move bones
-        skeleton.setBonesToSetupPose();
-
-        float centerX = player.getBounds().x + player.getBounds().width / 2f;
-        float floorY = player.getBounds().y + 2f;
-        skeleton.setPosition(centerX, floorY);
-        skeleton.setScale(player.getFacing() * SPRITE_FACING_OFFSET, 1f);
-        skeleton.setColor(player.isHurt() ? 1f : 0.95f, player.isHurt() ? 0.5f : 1f, player.isHurt() ? 0.5f : 1f, 1f);
-
-        float movementSpeed = Math.abs(player.getVelocity().x);
-        boolean walking = player.isGrounded() && movementSpeed > 1f;
-        boolean risingOrFalling = !player.isGrounded();
-
-        float walkCycle = MathUtils.sin(animationTime * 10f);
-        float walkAmount = walking ? 1f : 0f;
-        float idleBob = MathUtils.sin(animationTime * 3f) * 1.2f;
-
-        //idle/walk animation
-        root.setY(walking ? Math.abs(walkCycle) * 1.2f : idleBob);
-        torso.setRotation(walking ? walkCycle * 3f : MathUtils.sin(animationTime * 2f) * 1.5f);
-        head.setRotation(-torso.getRotation() * 0.5f);
-
-        backUpperLeg.setRotation(-walkCycle * 18f * walkAmount);
-        backLowerLeg.setRotation(Math.max(0f, walkCycle) * 22f * walkAmount);
-        frontUpperLeg.setRotation(walkCycle * 18f * walkAmount);
-        frontLowerLeg.setRotation(Math.max(0f, -walkCycle) * 22f * walkAmount);
-
-        backUpperArm.setRotation(walkCycle * 14f * walkAmount + 8f);
-        backForearm.setRotation(10f);
-        frontUpperArm.setRotation(FRONT_UPPER_ARM_READY_ROTATION - walkCycle * 6f * walkAmount);
-        frontForearm.setRotation(FRONT_FOREARM_READY_ROTATION);
-        sword.setRotation(SWORD_READY_ROTATION);
-
-        if (risingOrFalling) {
-            //jump/fall pose
-            torso.setRotation(player.getVelocity().y > 0f ? -6f : 6f);
-            backUpperLeg.setRotation(-12f);
-            backLowerLeg.setRotation(20f);
-            frontUpperLeg.setRotation(14f);
-            frontLowerLeg.setRotation(10f);
+    private void updateOneShotTimers(ModelPLAYER player, float delta) {
+        if (player.isHurt()) {
+            hurtAnimationTime += delta;
+        } else {
+            hurtAnimationTime = 0f;
         }
 
-        if (player.isAttacking()) {
-            //sword swing pose
-            float attackPhase = MathUtils.clamp(attackAnimationTime / ATTACK_ANIMATION_DURATION, 0f, 1f);
-            float swing = MathUtils.sin(attackPhase * MathUtils.PI * 0.5f);
-            if (player.getAttackDirectionY() > 0) {
-                frontUpperArm.setRotation(-45f + swing * 5f);
-                frontForearm.setRotation(-125f - swing * 30f);
-                sword.setRotation(-45f);
-                torso.setRotation(torso.getRotation() - 5f);
-            } else {
-                frontUpperArm.setRotation(FRONT_UPPER_ARM_READY_ROTATION + swing * 46f);
-                frontForearm.setRotation(FRONT_FOREARM_READY_ROTATION + swing * 50f);
-                sword.setRotation(SWORD_READY_ROTATION + swing * 45f);
-                torso.setRotation(torso.getRotation() - 4f + swing * 8f);
+        if (player.getAttackId() != lastAttackId) {
+            lastAttackId = player.getAttackId();
+            attackAnimationTime = 0f;
+            attackVisualActive = true;
+        }
+
+        if (attackVisualActive) {
+            attackAnimationTime += delta;
+            if (attackAnimationTime >= ATTACK_DURATION) {
+                attackVisualActive = false;
             }
         }
-
-        skeleton.updateWorldTransform(Skeleton.Physics.update);
     }
 
-    private SkeletonData createPrototypeSkeletonData() {
-        //spine-ish skeleton made in code
-        SkeletonData data = new SkeletonData();  
-        data.setName("prototype-block-player");
-
-        BoneData rootData = addBone(data, 0, "root", null, 0f, 0f);
-        BoneData torsoData = addBone(data, 1, "torso", rootData, 0f, 24f);
-        BoneData headData = addBone(data, 2, "head", torsoData, 0f, 24f);
-
-        BoneData backUpperArmData = addBone(data, 3, "back-upper-arm", torsoData, 11f, 17f);
-        BoneData backForearmData = addBone(data, 4, "back-forearm", backUpperArmData, ARM_FORWARD * UPPER_ARM_LENGTH, 0f);
-        BoneData frontUpperArmData = addBone(data, 5, "front-upper-arm", torsoData, 0f, 17f);
-        BoneData frontForearmData = addBone(data, 6, "front-forearm", frontUpperArmData, ARM_FORWARD * UPPER_ARM_LENGTH, 0f);
-        BoneData swordData = addBone(data, 7, "sword", frontForearmData, ARM_FORWARD * HAND_JOINT_DISTANCE, 0f);
-
-        BoneData backUpperLegData = addBone(data, 8, "back-upper-leg", rootData, -6f, 22f);
-        BoneData backLowerLegData = addBone(data, 9, "back-lower-leg", backUpperLegData, 0f, -19f);
-        BoneData frontUpperLegData = addBone(data, 10, "front-upper-leg", rootData, 6f, 22f);
-        BoneData frontLowerLegData = addBone(data, 11, "front-lower-leg", frontUpperLegData, 0f, -19f);
-
-        //attachments = actual sprite pieces
-        Skin skin = new Skin("default");
-        addUpperArmBar(data, skin, 0, "back-upper-arm", backUpperArmData, UPPER_ARM_LENGTH);
-        addFittedSlot(data, skin, 1, "back-forearm", backForearmData, lowerArmRegion, -4f, -1f, LOWER_ARM_LENGTH, LOWER_ARM_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 2, "back-shoulder", backUpperArmData, shoulderRegion, -12f, 2f, SHOULDER_LENGTH, SHOULDER_ROTATION, SHOULDER_SCALE_X, SHOULDER_SCALE_Y, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 3, "back-upper-leg", backUpperLegData, upperLegRegion, 0f, -8f, UPPER_LEG_LENGTH, UPPER_LEG_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 4, "back-lower-leg", backLowerLegData, lowerLegRegion, 0f, -1f, LOWER_LEG_LENGTH, LOWER_LEG_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 5, "torso", torsoData, torsoRegion, -2f, 10f, TORSO_LENGTH, TORSO_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 6, "head", headData, headRegion, -4f, 4f, HEAD_LENGTH, HEAD_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 7, "front-upper-leg", frontUpperLegData, upperLegRegion, -5f, -8f, UPPER_LEG_LENGTH, UPPER_LEG_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 8, "front-lower-leg", frontLowerLegData, lowerLegRegion, -4f,-1f, LOWER_LEG_LENGTH, LOWER_LEG_ROTATION, 1f, 1f, 1f, 1f);
-        addUpperArmBar(data, skin, 9, "front-upper-arm", frontUpperArmData, UPPER_ARM_LENGTH);
-        addFittedSlot(data, skin, 10, "front-forearm", frontForearmData, lowerArmRegion, -4f, 4f, LOWER_ARM_LENGTH, LOWER_ARM_ROTATION, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 11, "front-shoulder", frontUpperArmData, shoulderRegion, -1f, 0f, SHOULDER_LENGTH, SHOULDER_ROTATION, SHOULDER_SCALE_X, SHOULDER_SCALE_Y, 1f, 1f, 1f, 1f);
-        addFittedSlot(data, skin, 12, "sword", swordData, swordRegion, 18f, -2f, SWORD_LENGTH+5, SWORD_ROTATION+225, 1f, 1f, 1f, 1f);
-
-        data.getSkins().add(skin);
-        data.setDefaultSkin(skin);
-        return data;
+    private SpriteAnimation selectAnimation(ModelPLAYER player) {
+        if (player.isHurt()) return hurtAnimation;
+        if (attackVisualActive) return attackAnimation;
+        if (player.isGrounded() && Math.abs(player.getVelocity().x) > 1f) return walkAnimation;
+        return idleAnimation;
     }
 
-    private BoneData addBone(SkeletonData data, int index, String name, BoneData parent, float x, float y) {
-        BoneData bone = new BoneData(index, name, parent);
-        bone.setPosition(x, y);
-        data.getBones().add(bone);
-        return bone;
+    private float getStateTime(ModelPLAYER player, SpriteAnimation animation) {
+        if (animation == hurtAnimation) return hurtAnimationTime;
+        if (animation == attackAnimation) return attackAnimationTime;
+        if (animation == walkAnimation) {
+            return animationTime * Math.max(0.65f, player.getMoveSpeed() / ModelPLAYER.MOVE_SPEED);
+        }
+        if (!ANIMATE_IDLE_WHEN_STANDING) {
+            return 0f;
+        }
+        return animationTime;
     }
 
-    private void addUpperArmBar(SkeletonData data, Skin skin, int index, String name, BoneData bone, float length) {
-        addBlockSlot(
-            data,
-            skin,
-            index,
-            name,
-            bone,
-            blockRegion,
-            -length / 2f,
-            0f,
-            length,
-            UPPER_ARM_BAR_THICKNESS,
-            0f,
-            1f,
-            1f,
-            1f,
-            0f,
-            0f,
-            0.45f
-        );
-    }
-
-    private void addFittedSlot(
-        SkeletonData data,
-        Skin skin,
-        int index,
-        String name,
-        BoneData bone,
-        TextureRegion region,
-        float x,
-        float y,
-        float targetLength,
-        float rotation,
-        float r,
-        float g,
-        float b,
-        float a
+    private SpriteAnimation createAnimation(
+        int row,
+        int frameCount,
+        float duration,
+        boolean looping,
+        float[] frameAnchorX,
+        float[] frameOffsetX,
+        float[] frameOffsetY
     ) {
-        addFittedSlot(data, skin, index, name, bone, region, x, y, targetLength, rotation, 1f, 1f, r, g, b, a);
+        SpriteFrame[] frames = new SpriteFrame[frameCount];
+        for (int column = 0; column < frameCount; column++) {
+            int x = FRAME_BORDER_X[column] + FRAME_BORDER_INSET;
+            int y = FRAME_BORDER_Y[row] + FRAME_BORDER_INSET;
+            int width = FRAME_BORDER_X[column + 1] - FRAME_BORDER_X[column] - FRAME_BORDER_INSET * 2;
+            int height = FRAME_BORDER_Y[row + 1] - FRAME_BORDER_Y[row] - FRAME_BORDER_INSET * 2;
+            TextureRegion region = new TextureRegion(
+                characterSheet,
+                x,
+                y,
+                width,
+                height
+            );
+            float offsetX = APPLY_FRAME_OFFSETS ? frameOffsetX[column] : 0f;
+            float offsetY = APPLY_FRAME_OFFSETS ? frameOffsetY[column] : 0f;
+            float anchorX = frameAnchorX[column] * DRAW_WIDTH / width;
+            float rightOffsetX = BODY_ANCHOR_X - anchorX + offsetX;
+            float leftOffsetX = BODY_ANCHOR_X - (DRAW_WIDTH - anchorX) - offsetX;
+            frames[column] = new SpriteFrame(region, DRAW_WIDTH, DRAW_HEIGHT, rightOffsetX, leftOffsetX, offsetY);
+        }
+
+        return new SpriteAnimation(frames, duration / frameCount, looping);
     }
 
-    private void addFittedSlot(
-        SkeletonData data,
-        Skin skin,
-        int index,
-        String name,
-        BoneData bone,
-        TextureRegion region,
-        float x,
-        float y,
-        float targetLength,
-        float rotation,
-        float scaleX,
-        float scaleY,
-        float r,
-        float g,
-        float b,
-        float a
-    ) {
-        //keeps sprite ratio, targetLength = height
-        float aspectRatio = (float)region.getRegionWidth() / region.getRegionHeight();
-        addBlockSlot(data, skin, index, name, bone, region, x, y, targetLength * aspectRatio, targetLength, rotation, scaleX, scaleY, r, g, b, a);
+    private static class SpriteAnimation {
+        private final SpriteFrame[] frames;
+        private final float frameDuration;
+        private final boolean looping;
+
+        private SpriteAnimation(SpriteFrame[] frames, float frameDuration, boolean looping) {
+            this.frames = frames;
+            this.frameDuration = frameDuration;
+            this.looping = looping;
+        }
+
+        private SpriteFrame getKeyFrame(float stateTime) {
+            int frameIndex = (int)(stateTime / frameDuration);
+            if (looping) {
+                frameIndex = frameIndex % frames.length;
+            } else {
+                frameIndex = Math.min(frameIndex, frames.length - 1);
+            }
+            return frames[frameIndex];
+        }
     }
 
-    private void addBlockSlot(
-        SkeletonData data,
-        Skin skin,
-        int index,
-        String name,
-        BoneData bone,
-        TextureRegion region,
-        float x,
-        float y,
-        float width,
-        float height,
-        float rotation,
-        float scaleX,
-        float scaleY,
-        float r,
-        float g,
-        float b,
-        float a
-    ) {
-        SlotData slot = new SlotData(index, name, bone);
-        slot.setAttachmentName(name);
-        data.getSlots().add(slot);
+    private static class SpriteFrame {
+        private final TextureRegion region;
+        private final float drawWidth;
+        private final float drawHeight;
+        private final float rightOffsetX;
+        private final float leftOffsetX;
+        private final float offsetY;
 
-        RegionAttachment attachment = new RegionAttachment(name);
-        attachment.setRegion(region);
-        attachment.setX(x);
-        attachment.setY(y);
-        attachment.setWidth(width);
-        attachment.setHeight(height);
-        attachment.setRotation(rotation);
-        attachment.setScaleX(scaleX);
-        attachment.setScaleY(scaleY);
-        attachment.getColor().set(r, g, b, a);
-        attachment.updateRegion();
-        skin.setAttachment(index, name, attachment);
+        private SpriteFrame(
+            TextureRegion region,
+            float drawWidth,
+            float drawHeight,
+            float rightOffsetX,
+            float leftOffsetX,
+            float offsetY
+        ) {
+            this.region = region;
+            this.drawWidth = drawWidth;
+            this.drawHeight = drawHeight;
+            this.rightOffsetX = rightOffsetX;
+            this.leftOffsetX = leftOffsetX;
+            this.offsetY = offsetY;
+        }
+
+        private float getOffsetX(int facing) {
+            return facing < 0 ? leftOffsetX : rightOffsetX;
+        }
     }
 
-    private Texture createWhitePixelTexture() {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.WHITE);
-        pixmap.fill();
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        return texture;
-    }
 }

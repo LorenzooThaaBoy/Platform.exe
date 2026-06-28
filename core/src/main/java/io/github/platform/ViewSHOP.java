@@ -14,14 +14,22 @@ public class ViewSHOP {
     private static final float CARD_Y = 145f;
     private static final float FIRST_CARD_X = 125f;
     private static final float CARD_GAP = 35f;
-    private static final float ICON_SIZE = 62f;
+    private static final float ICON_MAX_WIDTH = 86f;
+    private static final float ICON_MAX_HEIGHT = 62f;
     private static final float ICON_Y = CARD_Y + 82f;
 
     private final EnumMap<ModelSHOP.Item, Texture> itemTextures = new EnumMap<>(ModelSHOP.Item.class);
 
     public ViewSHOP() {
+        itemTextures.put(ModelSHOP.Item.DAMAGE_UP, new Texture("attackup.png"));
+        itemTextures.put(ModelSHOP.Item.RANGE_UP, new Texture("rangeup.png"));
+        itemTextures.put(ModelSHOP.Item.HP_UP, new Texture("healthup.png"));
+        itemTextures.put(ModelSHOP.Item.SPEED_UP, new Texture("speedup_.png"));
+        itemTextures.put(ModelSHOP.Item.DASH, new Texture("dashicon.png"));
         itemTextures.put(ModelSHOP.Item.MAGIC_WAND, new Texture("MagicHat icon .png"));
         itemTextures.put(ModelSHOP.Item.LIGHTNING, new Texture("lightningbolt icon .png"));
+        itemTextures.put(ModelSHOP.Item.SCATTER, new Texture("scatter.png"));
+        itemTextures.put(ModelSHOP.Item.LASER, new Texture("laser_icon.png"));
     }
 
     public void render(ShapeRenderer shapes, ModelSHOP shop) {
@@ -48,7 +56,7 @@ public class ViewSHOP {
             if (itemTexture == null) continue;
 
             float x = FIRST_CARD_X + i * (CARD_WIDTH + CARD_GAP);
-            drawCentered(batch, itemTexture, x + CARD_WIDTH / 2f, ICON_Y + ICON_SIZE / 2f, ICON_SIZE, ICON_SIZE);
+            drawCentered(batch, itemTexture, x + CARD_WIDTH / 2f, ICON_Y + ICON_MAX_HEIGHT / 2f, ICON_MAX_WIDTH, ICON_MAX_HEIGHT);
         }
     }
 

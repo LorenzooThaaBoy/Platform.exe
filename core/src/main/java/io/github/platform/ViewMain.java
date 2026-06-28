@@ -28,6 +28,8 @@ public class ViewMain extends ApplicationAdapter {
     private Texture heartTexture;
     private Texture magicWandTexture;
     private Texture lightningTexture;
+    private Texture laserTexture;
+    private Texture dashTexture;
 
     private ModelGAME game;
     private ModelMAP map;
@@ -55,6 +57,8 @@ public class ViewMain extends ApplicationAdapter {
         heartTexture = new Texture("Hrat.png");
         magicWandTexture = new Texture("MagicHat icon .png");
         lightningTexture = new Texture("lightningbolt icon .png");
+        laserTexture = new Texture("laser_icon.png");
+        dashTexture = new Texture("dashicon.png");
 
         game = new ModelGAME();
         map = new ModelMAP();
@@ -112,6 +116,8 @@ public class ViewMain extends ApplicationAdapter {
         heartTexture.dispose();
         magicWandTexture.dispose();
         lightningTexture.dispose();
+        laserTexture.dispose();
+        dashTexture.dispose();
     }
 
     private void renderGame(float delta) {
@@ -141,6 +147,9 @@ public class ViewMain extends ApplicationAdapter {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
         viewShop.render(shapes, shop);
+        if (shouldRenderItemSlots()) {
+            renderItemSlots();
+        }
         renderTransitionOverlay();
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
@@ -161,13 +170,13 @@ public class ViewMain extends ApplicationAdapter {
 
         batch.begin();
         viewEnemy.renderSprites(batch, controllerEnemy);
+        viewPlayer.renderLaser(batch, player);
         viewPlayer.render(batch, player, game.isPaused() ? 0f : delta);
         viewPlayer.renderMagicOrb(batch, player, controllerPlayer.getMagicOrbBounds());
         batch.end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
-        viewPlayer.renderHitboxes(shapes, player);
         if (shouldRenderItemSlots()) {
             renderItemSlots();
         }
@@ -247,19 +256,19 @@ public class ViewMain extends ApplicationAdapter {
         renderItemSlot(PRIMARY_ITEM_SLOT, new Color(0.22f, 0.22f, 0.3f, 0.85f));
         renderItemSlot(SECONDARY_ITEM_SLOT, new Color(0.18f, 0.28f, 0.34f, 0.85f));
 
-        if (player.isBrimstoneCharging()) {
-            shapes.setColor(1f, 0.28f, 0.05f, 1f);
+        if (player.isLaserCharging()) {
+            shapes.setColor(1f, 0.18f, 0.08f, 1f);
             shapes.rect(
                 SECONDARY_ITEM_SLOT.x,
                 SECONDARY_ITEM_SLOT.y - 5f,
-                SECONDARY_ITEM_SLOT.width * player.getBrimstoneChargeProgress(),
+                SECONDARY_ITEM_SLOT.width * player.getLaserChargeProgress(),
                 3f
             );
         }
     }
 
     private boolean shouldRenderItemSlots() {
-        return game.isPlaying() || game.isPaused();
+        return game.isPlaying() || game.isPaused() || game.isShop();
     }
 
     private void renderItemSlot(Rectangle slot, Color fillColor) {
@@ -270,12 +279,11 @@ public class ViewMain extends ApplicationAdapter {
     }
 
     private void renderItemSlotText() {
-        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.NONE) {
+        if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.NONE && player.getDashLevel() <= 0) {
             font.draw(batch, "-", PRIMARY_ITEM_SLOT.x + 17f, PRIMARY_ITEM_SLOT.y + 25f);
         }
 
-        if (player.getSecondaryItem() == ModelPLAYER.SecondaryItem.NONE
-            || player.getSecondaryItem() == ModelPLAYER.SecondaryItem.BRIMSTONE) {
+        if (player.getSecondaryItem() == ModelPLAYER.SecondaryItem.NONE) {
             font.draw(batch, getSecondaryItemLabel(), SECONDARY_ITEM_SLOT.x + 17f, SECONDARY_ITEM_SLOT.y + 25f);
         }
     }
@@ -283,19 +291,24 @@ public class ViewMain extends ApplicationAdapter {
     private void renderItemSlotSprites() {
         if (player.getPrimaryItem() == ModelPLAYER.PrimaryItem.MAGIC_WAND) {
             drawCentered(magicWandTexture, PRIMARY_ITEM_SLOT);
+        } else if (player.getDashLevel() > 0) {
+            drawCentered(dashTexture, PRIMARY_ITEM_SLOT);
         }
 
         if (player.getSecondaryItem() == ModelPLAYER.SecondaryItem.LIGHTNING) {
             drawCentered(lightningTexture, SECONDARY_ITEM_SLOT);
+        } else if (player.getSecondaryItem() == ModelPLAYER.SecondaryItem.LASER) {
+            drawCentered(laserTexture, SECONDARY_ITEM_SLOT);
         }
+
     }
 
     private String getSecondaryItemLabel() {
         switch (player.getSecondaryItem()) {
             case LIGHTNING:
                 return "L";
-            case BRIMSTONE:
-                return "B";
+            case LASER:
+                return "L";
             default:
                 return "-";
         }

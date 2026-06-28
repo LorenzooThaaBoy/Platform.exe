@@ -13,12 +13,12 @@ public class ModelPLAYER {
     public enum SecondaryItem {
         NONE,
         LIGHTNING,
-        BRIMSTONE
+        LASER
     }
 
     //player stats
-    public static final float WIDTH = 32f;
-    public static final float HEIGHT = 46f;
+    public static final float WIDTH = 42f;
+    public static final float HEIGHT = 66f;
     public static final float MOVE_SPEED = 210f;
     public static final float JUMP_SPEED = 420f;
     public static final float GRAVITY = -980f;
@@ -28,8 +28,8 @@ public class ModelPLAYER {
     private static final float DASH_COOLDOWN = 0.55f;
     private static final float BASE_ATTACK_DAMAGE = 1f;
     private static final float BASE_ATTACK_REACH = 38f;
-    private static final float BASE_ATTACK_WIDTH = 44f;
-    private static final float BASE_ATTACK_HEIGHT = 30f;
+    private static final float BASE_ATTACK_WIDTH = 36f;
+    private static final float BASE_ATTACK_HEIGHT = 58f;
     private static final float BASE_UP_ATTACK_WIDTH = 34f;
     private static final float BASE_UP_ATTACK_HEIGHT = 48f;
     private static final float[] DAMAGE_MULTIPLIERS = {1f, 1.2f, 1.7f, 2.3f, 3f};
@@ -40,11 +40,11 @@ public class ModelPLAYER {
     private static final float[] DASH_REACH = {0f, 36f, 48f, 62f, 78f};
     private static final int BASE_MAX_LIVES = 3;
     private static final float LIGHTNING_DAMAGE = 2.25f;
-    private static final float BRIMSTONE_CHARGE_DURATION = 1.2f;
-    private static final float BRIMSTONE_BEAM_DURATION = 0.22f;
+    private static final float LASER_CHARGE_DURATION = 1.2f;
+    private static final float LASER_BEAM_DURATION = 0.22f;
     private static final float SECONDARY_ABILITY_COOLDOWN = 5f;
-    private static final float BRIMSTONE_BEAM_HEIGHT = 18f;
-    private static final float BRIMSTONE_DAMAGE = 4f;
+    private static final float LASER_BEAM_HEIGHT = 18f;
+    private static final float LASER_DAMAGE = 4f;
 
     //position + current state
     private final Rectangle bounds = new Rectangle(80f, ModelMAP.GROUND_Y, WIDTH, HEIGHT);
@@ -68,14 +68,17 @@ public class ModelPLAYER {
     private int dashLevel;
     private PrimaryItem primaryItem = PrimaryItem.NONE;
     private SecondaryItem secondaryItem = SecondaryItem.NONE;
+    private final Rectangle laserBeamBounds = new Rectangle();
     private boolean scatterUnlocked;
     private boolean lightningRequested;
     private int lightningAttackId;
-    private float brimstoneChargeTimer;
-    private float brimstoneBeamTimer;
-    private float brimstoneCooldownTimer;
-    private int brimstoneDirection = 1;
-    private int brimstoneAttackId;
+    private float laserChargeTimer;
+    private float laserBeamTimer;
+    private float laserCooldownTimer;
+    private int laserDirection = 1;
+    private int laserAttackId;
+    private boolean laserBeamLocked;
+    private boolean laserImpactEnemyHit;
 
     //getters for controller/view stuff
     public Rectangle getBounds() { 
@@ -142,24 +145,73 @@ public class ModelPLAYER {
         return lightningAttackId;
     }
 
-    public boolean isBrimstoneCharging() {
-        return secondaryItem == SecondaryItem.BRIMSTONE && brimstoneChargeTimer > 0f && brimstoneBeamTimer <= 0f;
+    public boolean isLaserCharging() {
+        return secondaryItem == SecondaryItem.LASER && laserChargeTimer > 0f && laserBeamTimer <= 0f;
     }
 
-    public float getBrimstoneChargeProgress() {
-        return Math.min(1f, brimstoneChargeTimer / BRIMSTONE_CHARGE_DURATION);
+    public float getLaserChargeProgress() {
+        return Math.min(1f, laserChargeTimer / LASER_CHARGE_DURATION);
     }
 
-    public boolean isBrimstoneBeamActive() {
-        return brimstoneBeamTimer > 0f;
+    public boolean isLaserBeamActive() {
+        return laserBeamTimer > 0f;
     }
 
-    public float getBrimstoneDamage() {
-        return BRIMSTONE_DAMAGE * DAMAGE_MULTIPLIERS[damageLevel];
+    public float getLaserDamage() {
+        return LASER_DAMAGE * DAMAGE_MULTIPLIERS[damageLevel];
     }
 
-    public int getBrimstoneAttackId() {
-        return brimstoneAttackId;
+    public int getLaserAttackId() {
+        return laserAttackId;
+    }
+
+    public int getLaserDirection() {
+        return laserDirection;
+    }
+
+    public boolean isLaserBeamLocked() {
+        return laserBeamLocked;
+    }
+
+    public boolean isLaserImpactEnemyHit() {
+        return laserImpactEnemyHit;
+    }
+
+    public Rectangle getLaserBeamBounds() {
+        if (laserBeamTimer > 0f && laserBeamBounds.width > 0f) {
+            return laserBeamBounds;
+        }
+        return getLaserMaxBeamBounds();
+    }
+
+    public Rectangle getLaserMaxBeamBounds() {
+        float beamY = bounds.y + bounds.height / 2f - LASER_BEAM_HEIGHT / 2f;
+        if (laserDirection > 0) {
+            float beamX = bounds.x + bounds.width;
+            return new Rectangle(beamX, beamY, ModelMAP.WORLD_WIDTH - beamX, LASER_BEAM_HEIGHT);
+        }
+
+        return new Rectangle(0f, beamY, bounds.x, LASER_BEAM_HEIGHT);
+    }
+
+    public void setLaserBeamEnd(float hitX) {
+        float beamY = bounds.y + bounds.height / 2f - LASER_BEAM_HEIGHT / 2f;
+        if (laserDirection > 0) {
+            float beamX = bounds.x + bounds.width;
+            laserBeamBounds.set(beamX, beamY, Math.max(0f, hitX - beamX), LASER_BEAM_HEIGHT);
+        } else {
+            laserBeamBounds.set(hitX, beamY, Math.max(0f, bounds.x - hitX), LASER_BEAM_HEIGHT);
+        }
+    }
+
+    public void lockLaserBeamEnd(float hitX) {
+        lockLaserBeamEnd(hitX, false);
+    }
+
+    public void lockLaserBeamEnd(float hitX, boolean enemyHit) {
+        setLaserBeamEnd(hitX);
+        laserBeamLocked = true;
+        laserImpactEnemyHit = enemyHit;
     }
 
     public void setFacingFromMovement(float movement) {
@@ -273,8 +325,13 @@ public class ModelPLAYER {
         hurtTimer = Math.max(0f, hurtTimer - delta);
         dashTimer = Math.max(0f, dashTimer - delta);
         dashCooldownTimer = Math.max(0f, dashCooldownTimer - delta);
-        brimstoneBeamTimer = Math.max(0f, brimstoneBeamTimer - delta);
-        brimstoneCooldownTimer = Math.max(0f, brimstoneCooldownTimer - delta);
+        laserBeamTimer = Math.max(0f, laserBeamTimer - delta);
+        laserCooldownTimer = Math.max(0f, laserCooldownTimer - delta);
+        if (laserBeamTimer <= 0f) {
+            laserBeamBounds.set(0f, 0f, 0f, 0f);
+            laserBeamLocked = false;
+            laserImpactEnemyHit = false;
+        }
     }
 
     public void updateSecondaryItemInput(float delta, boolean justPressed, boolean pressed) {
@@ -282,44 +339,44 @@ public class ModelPLAYER {
         lightningRequested = false;
 
         if (secondaryItem == SecondaryItem.LIGHTNING) {
-            if (justPressed && brimstoneCooldownTimer <= 0f) {
+            if (justPressed && laserCooldownTimer <= 0f) {
                 lightningRequested = true;
                 lightningAttackId = ++attackId;
-                brimstoneCooldownTimer = SECONDARY_ABILITY_COOLDOWN;
+                laserCooldownTimer = SECONDARY_ABILITY_COOLDOWN;
             }
             return;
         }
 
-        //brimstone = hold C then release
-        if (secondaryItem != SecondaryItem.BRIMSTONE) {
-            brimstoneChargeTimer = 0f;
+        //laser = hold C then release
+        if (secondaryItem != SecondaryItem.LASER) {
+            laserChargeTimer = 0f;
             return;
         }
 
-        if (brimstoneBeamTimer > 0f) {
-            brimstoneChargeTimer = 0f;
+        if (laserBeamTimer > 0f) {
+            laserChargeTimer = 0f;
             return;
         }
 
         if (!pressed) {
-            if (brimstoneChargeTimer >= BRIMSTONE_CHARGE_DURATION) {
-                startBrimstoneBeam();
+            if (laserChargeTimer >= LASER_CHARGE_DURATION) {
+                startLaserBeam();
             } else {
-                brimstoneChargeTimer = 0f;
+                laserChargeTimer = 0f;
             }
             return;
         }
 
-        if (brimstoneCooldownTimer > 0f) {
-            brimstoneChargeTimer = 0f;
+        if (laserCooldownTimer > 0f) {
+            laserChargeTimer = 0f;
             return;
         }
 
-        if (brimstoneChargeTimer <= 0f) {
-            brimstoneDirection = facing;
+        if (laserChargeTimer <= 0f) {
+            laserDirection = facing;
         }
 
-        brimstoneChargeTimer = Math.min(BRIMSTONE_CHARGE_DURATION, brimstoneChargeTimer + delta);
+        laserChargeTimer = Math.min(LASER_CHARGE_DURATION, laserChargeTimer + delta);
     }
 
     public void startDash() {
@@ -337,12 +394,14 @@ public class ModelPLAYER {
         //sword hitbox, side or up
         float rangeBonus = RANGE_BONUSES[rangeLevel];
         float attackWidth = attackDirectionY > 0 ? BASE_UP_ATTACK_WIDTH + rangeBonus * 0.4f : BASE_ATTACK_WIDTH + rangeBonus;
-        float attackHeight = attackDirectionY > 0 ? BASE_UP_ATTACK_HEIGHT + rangeBonus : BASE_ATTACK_HEIGHT;
+        float attackHeight = attackDirectionY > 0
+            ? BASE_UP_ATTACK_HEIGHT + rangeBonus
+            : Math.min(bounds.height, BASE_ATTACK_HEIGHT + rangeBonus * 0.15f);
         float sideReach = BASE_ATTACK_REACH + rangeBonus;
         float attackX = attackDirectionY > 0
             ? bounds.x + bounds.width / 2f - attackWidth / 2f
             : attackDirectionX > 0 ? bounds.x + bounds.width + sideReach - attackWidth : bounds.x - sideReach;
-        float attackY = attackDirectionY > 0 ? bounds.y + bounds.height : bounds.y + 9f;
+        float attackY = attackDirectionY > 0 ? bounds.y + bounds.height : bounds.y + (bounds.height - attackHeight) / 2f;
         return new Rectangle(attackX, attackY, attackWidth, attackHeight);
     }
 
@@ -351,17 +410,6 @@ public class ModelPLAYER {
         float reach = DASH_REACH[dashLevel];
         float dashX = dashDirection > 0 ? bounds.x + bounds.width : bounds.x - reach;
         return new Rectangle(dashX, bounds.y + 4f, reach, bounds.height - 8f);
-    }
-
-    public Rectangle getBrimstoneBeamBounds() {
-        //beam across screen
-        float beamY = bounds.y + bounds.height / 2f - BRIMSTONE_BEAM_HEIGHT / 2f;
-        if (brimstoneDirection > 0) {
-            float beamX = bounds.x + bounds.width;
-            return new Rectangle(beamX, beamY, ModelMAP.WORLD_WIDTH - beamX, BRIMSTONE_BEAM_HEIGHT);
-        }
-
-        return new Rectangle(0f, beamY, bounds.x, BRIMSTONE_BEAM_HEIGHT);
     }
 
     public void upgradeDamage() {
@@ -393,9 +441,12 @@ public class ModelPLAYER {
     public void equipSecondaryItem(SecondaryItem secondaryItem) {
         this.secondaryItem = secondaryItem;
         lightningRequested = false;
-        brimstoneChargeTimer = 0f;
-        brimstoneBeamTimer = 0f;
-        brimstoneCooldownTimer = 0f;
+        laserChargeTimer = 0f;
+        laserBeamTimer = 0f;
+        laserCooldownTimer = 0f;
+        laserBeamBounds.set(0f, 0f, 0f, 0f);
+        laserBeamLocked = false;
+        laserImpactEnemyHit = false;
     }
 
     public void unlockScatter() {
@@ -428,18 +479,24 @@ public class ModelPLAYER {
         scatterUnlocked = false;
         lightningRequested = false;
         lightningAttackId = 0;
-        brimstoneChargeTimer = 0f;
-        brimstoneBeamTimer = 0f;
-        brimstoneCooldownTimer = 0f;
-        brimstoneDirection = 1;
-        brimstoneAttackId = 0;
+        laserBeamBounds.set(0f, 0f, 0f, 0f);
+        laserChargeTimer = 0f;
+        laserBeamTimer = 0f;
+        laserCooldownTimer = 0f;
+        laserDirection = 1;
+        laserAttackId = 0;
+        laserBeamLocked = false;
+        laserImpactEnemyHit = false;
     }
 
-    private void startBrimstoneBeam() {
-        brimstoneChargeTimer = 0f;
-        brimstoneBeamTimer = BRIMSTONE_BEAM_DURATION;
-        brimstoneCooldownTimer = SECONDARY_ABILITY_COOLDOWN;
-        brimstoneAttackId = ++attackId;
+    private void startLaserBeam() {
+        laserChargeTimer = 0f;
+        laserBeamTimer = LASER_BEAM_DURATION;
+        laserCooldownTimer = SECONDARY_ABILITY_COOLDOWN;
+        laserAttackId = ++attackId;
+        setLaserBeamEnd(laserDirection > 0 ? ModelMAP.WORLD_WIDTH : 0f);
+        laserBeamLocked = false;
+        laserImpactEnemyHit = false;
     }
 
 }

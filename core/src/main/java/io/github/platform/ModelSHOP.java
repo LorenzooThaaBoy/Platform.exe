@@ -18,7 +18,7 @@ public class ModelSHOP {
         MAGIC_WAND("Magic Wand", player -> "Primary: arrow orb", player -> player.equipPrimaryItem(ModelPLAYER.PrimaryItem.MAGIC_WAND)),
         LIGHTNING("Lightning", player -> "Secondary: C zap", player -> player.equipSecondaryItem(ModelPLAYER.SecondaryItem.LIGHTNING)),
         SCATTER("Scatter", player -> player.hasScatter() ? "Owned passive" : "Passive death burst", ModelPLAYER::unlockScatter),
-        BRIMSTONE("Brimstone", player -> "Secondary: hold C", player -> player.equipSecondaryItem(ModelPLAYER.SecondaryItem.BRIMSTONE));
+        LASER("Laser", player -> "Secondary: hold C", player -> player.equipSecondaryItem(ModelPLAYER.SecondaryItem.LASER));
 
         private final String displayName;
         private final Function<ModelPLAYER, String> description;
@@ -52,7 +52,7 @@ public class ModelSHOP {
         Item.MAGIC_WAND,
         Item.LIGHTNING,
         Item.SCATTER,
-        Item.BRIMSTONE
+        Item.LASER
     };
     private final Item[] items = new Item[SHOP_SLOT_COUNT];
     private int selectedIndex;

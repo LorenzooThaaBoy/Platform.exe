@@ -96,6 +96,7 @@ public class ControllerENEMY {
 
         updateProjectiles(delta, player);
         updateLightning(player);
+        updateLaserBeam(map, player);
 
         //move enemies and check all player damage sources
         for (int i = enemies.size - 1; i >= 0; i--) {
@@ -129,9 +130,8 @@ public class ControllerENEMY {
                 }
             }
 
-            Rectangle brimstoneBeamBounds = player.getBrimstoneBeamBounds();
-            if (player.isBrimstoneBeamActive() && brimstoneBeamBounds.overlaps(enemy.getBounds())) {
-                if (damageEnemy(enemy, player.getBrimstoneDamage(), player.getBrimstoneAttackId(), player)) {
+            if (player.isLaserBeamActive() && isLaserHittingEnemy(player, enemy)) {
+                if (damageEnemy(enemy, player.getLaserDamage(), player.getLaserAttackId(), player)) {
                     enemies.removeIndex(i);
                     continue;
                 }
@@ -202,6 +202,69 @@ public class ControllerENEMY {
         if (damageEnemy(enemy, player.getLightningDamage(), player.getLightningAttackId(), player)) {
             enemies.removeIndex(enemyIndex);
         }
+    }
+
+    private void updateLaserBeam(ModelMAP map, ModelPLAYER player) {
+        if (!player.isLaserBeamActive()) return;
+        if (player.isLaserBeamLocked()) return;
+
+        Rectangle maxBeamBounds = player.getLaserMaxBeamBounds();
+        float hitX = player.getLaserDirection() > 0 ? ModelMAP.WORLD_WIDTH : 0f;
+        boolean enemyHit = false;
+
+        for (Rectangle platform : map.getPlatforms()) {
+            if (!verticalRangesOverlap(maxBeamBounds, platform)) continue;
+
+            if (player.getLaserDirection() > 0) {
+                if (platform.x >= maxBeamBounds.x && platform.x < hitX) {
+                    hitX = platform.x;
+                    enemyHit = false;
+                }
+            } else {
+                float platformRight = platform.x + platform.width;
+                if (platformRight <= maxBeamBounds.x + maxBeamBounds.width && platformRight > hitX) {
+                    hitX = platformRight;
+                    enemyHit = false;
+                }
+            }
+        }
+
+        for (ModelENEMY enemy : enemies) {
+            Rectangle enemyBounds = enemy.getBounds();
+            if (!verticalRangesOverlap(maxBeamBounds, enemyBounds)) continue;
+
+            if (player.getLaserDirection() > 0) {
+                if (enemyBounds.x >= maxBeamBounds.x && enemyBounds.x < hitX) {
+                    hitX = enemyBounds.x;
+                    enemyHit = true;
+                }
+            } else {
+                float enemyRight = enemyBounds.x + enemyBounds.width;
+                if (enemyRight <= maxBeamBounds.x + maxBeamBounds.width && enemyRight > hitX) {
+                    hitX = enemyRight;
+                    enemyHit = true;
+                }
+            }
+        }
+
+        player.lockLaserBeamEnd(hitX, enemyHit);
+    }
+
+    private boolean isLaserHittingEnemy(ModelPLAYER player, ModelENEMY enemy) {
+        Rectangle beamBounds = player.getLaserBeamBounds();
+        Rectangle enemyBounds = enemy.getBounds();
+        if (beamBounds.overlaps(enemyBounds)) return true;
+        if (!verticalRangesOverlap(beamBounds, enemyBounds)) return false;
+
+        float hitX = player.getLaserDirection() > 0 ? beamBounds.x + beamBounds.width : beamBounds.x;
+        if (player.getLaserDirection() > 0) {
+            return Math.abs(enemyBounds.x - hitX) <= 1f;
+        }
+        return Math.abs(enemyBounds.x + enemyBounds.width - hitX) <= 1f;
+    }
+
+    private boolean verticalRangesOverlap(Rectangle a, Rectangle b) {
+        return a.y < b.y + b.height && a.y + a.height > b.y;
     }
 
     private boolean damageEnemy(ModelENEMY enemy, float damage, int attackId, ModelPLAYER player) {

@@ -3,27 +3,29 @@ package io.github.platform;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class ViewENEMY { 
     private static final float SPRITE_SCALE = 3f;
+    private static final float LIGHTNING_FALL_WIDTH = 48f;
+    private static final float LIGHTNING_FALL_HEIGHT = 190f;
+    private static final float LIGHTNING_IMPACT_WIDTH = 96f;
+    private static final float LIGHTNING_IMPACT_HEIGHT = 116f;
 
     private final Texture enemyTexture;
+    private final Texture lightningTexture;
+    private final TextureRegion lightningFallRegion;
+    private final TextureRegion lightningImpactRegion;
 
     public ViewENEMY() {
         enemyTexture = new Texture("Enemy_static.png");
+        lightningTexture = new Texture("lightning_sprite_.png");
+        lightningFallRegion = new TextureRegion(lightningTexture, 0, 0, 172, 343);
+        lightningImpactRegion = new TextureRegion(lightningTexture, 172, 0, 172, 343);
     }
 
     public void render(ShapeRenderer shapes, ControllerENEMY controllerEnemy) {
-        shapes.setColor(new Color(0.88f, 0.18f, 0.42f, 1f));
-        for (ModelENEMY enemy : controllerEnemy.getEnemies()) {
-            shapes.circle(
-                enemy.getBounds().x + enemy.getBounds().width / 2f,
-                enemy.getBounds().y + enemy.getBounds().height / 2f,
-                enemy.getBounds().width / 2f
-            );
-        }
-
         shapes.setColor(new Color(1f, 0.86f, 0.22f, 1f));
         for (ModelPROJECTILE projectile : controllerEnemy.getProjectiles()) {
             shapes.circle(
@@ -33,28 +35,43 @@ public class ViewENEMY {
             );
         }
 
-        if (controllerEnemy.isLightningEffectActive()) {
-            shapes.setColor(new Color(0.45f, 0.9f, 1f, 0.85f));
-            shapes.rect(controllerEnemy.getLightningEffectX() - 4f, controllerEnemy.getLightningEffectY(), 8f, ModelMAP.WORLD_HEIGHT - controllerEnemy.getLightningEffectY());
-            shapes.circle(controllerEnemy.getLightningEffectX(), controllerEnemy.getLightningEffectY(), 20f);
-        }
     }
 
     public void renderSprites(SpriteBatch batch, ControllerENEMY controllerEnemy) {
         for (ModelENEMY enemy : controllerEnemy.getEnemies()) {
             float spriteWidth = enemy.getBounds().width * SPRITE_SCALE;
             float spriteHeight = enemy.getBounds().height * SPRITE_SCALE;
+            float spriteX = enemy.getBounds().x + enemy.getBounds().width / 2f - spriteWidth / 2f;
+            float spriteY = enemy.getBounds().y + enemy.getBounds().height / 2f - spriteHeight / 2f;
+            if (enemy.getFacing() < 0) {
+                batch.draw(enemyTexture, spriteX + spriteWidth, spriteY, -spriteWidth, spriteHeight);
+            } else {
+                batch.draw(enemyTexture, spriteX, spriteY, spriteWidth, spriteHeight);
+            }
+        }
+
+        if (controllerEnemy.isLightningEffectActive()) {
+            float effectX = controllerEnemy.getLightningEffectX();
+            float effectY = controllerEnemy.getLightningEffectY();
             batch.draw(
-                enemyTexture,
-                enemy.getBounds().x + enemy.getBounds().width / 2f - spriteWidth / 2f,
-                enemy.getBounds().y + enemy.getBounds().height / 2f - spriteHeight / 2f,
-                spriteWidth,
-                spriteHeight
+                lightningFallRegion,
+                effectX - LIGHTNING_FALL_WIDTH / 2f,
+                effectY + 8f,
+                LIGHTNING_FALL_WIDTH,
+                LIGHTNING_FALL_HEIGHT
+            );
+            batch.draw(
+                lightningImpactRegion,
+                effectX - LIGHTNING_IMPACT_WIDTH / 2f,
+                effectY - LIGHTNING_IMPACT_HEIGHT / 2f,
+                LIGHTNING_IMPACT_WIDTH,
+                LIGHTNING_IMPACT_HEIGHT
             );
         }
     }
 
     public void dispose() {
         enemyTexture.dispose();
+        lightningTexture.dispose();
     }
 }

@@ -63,6 +63,11 @@ public class ControllerGAME {
             game.setState(ModelGAME.State.PAUSED);
             return;
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+            //temporary shop test shortcut
+            openShop(game, shop);
+            return;
+        }
 
         controllerPlayer.update(player, map, delta);
         controllerEnemy.update(map, player, controllerPlayer, delta);
