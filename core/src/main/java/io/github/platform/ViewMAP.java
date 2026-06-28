@@ -17,7 +17,7 @@ public class ViewMAP {
         backgroundTexture = new Texture("Background.png");
         platformTexture = new Texture("PlatformTexture.png");
     }
-    
+
     public void render(SpriteBatch batch, ModelMAP map) {
         batch.draw(backgroundTexture, 0f, 0f, ModelMAP.WORLD_WIDTH, ModelMAP.WORLD_HEIGHT);
 

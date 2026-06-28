@@ -28,6 +28,7 @@ public class ControllerGAME {
     public void update(
         ModelGAME game,
         ModelMAP map,
+        ModelWAVE wave,
         ModelPLAYER player,
         ModelSHOP shop,
         ControllerPLAYER controllerPlayer,
@@ -38,19 +39,20 @@ public class ControllerGAME {
     ) {
         //state machine stuff
         if (game.isPlaying()) {
-            updatePlaying(game, map, player, shop, controllerPlayer, controllerEnemy, delta);
+            updatePlaying(game, map, wave, player, shop, controllerPlayer, controllerEnemy, delta);
         } else if (game.isShop()) {
-            updateShop(game, player, shop, controllerEnemy, controllerShop);
+            updateShop(game, wave, player, shop, controllerShop);
         } else if (game.isPaused()) {
             updatePauseInput(game, viewport);
         } else if (game.isGameOver() && restartRequested(viewport)) {
-            restart(game, player, controllerEnemy);
+            restart(game, wave, player);
         }
     }
 
     private void updatePlaying(
         ModelGAME game,
         ModelMAP map,
+        ModelWAVE wave,
         ModelPLAYER player,
         ModelSHOP shop,
         ControllerPLAYER controllerPlayer,
@@ -63,23 +65,18 @@ public class ControllerGAME {
             game.setState(ModelGAME.State.PAUSED);
             return;
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            //temporary shop test shortcut
-            openShop(game, shop);
-            return;
-        }
 
         controllerPlayer.update(player, map, delta);
-        controllerEnemy.update(map, player, controllerPlayer, delta);
+        controllerEnemy.update(wave, map, player, delta);
 
         if (player.getLives() <= 0) {
             game.setState(ModelGAME.State.GAME_OVER);
-        } else if (controllerEnemy.isWaveComplete()) {
+        } else if (wave.isWaveComplete()) {
             //shop every 3 waves
-            if (controllerEnemy.shouldOpenShop()) {
+            if (wave.shouldOpenShop()) {
                 openShop(game, shop);
             } else {
-                controllerEnemy.startNextWave();
+                wave.startNextWave();
                 game.startTransition(0.35f);
             }
         }
@@ -87,14 +84,14 @@ public class ControllerGAME {
 
     private void updateShop(
         ModelGAME game,
+        ModelWAVE wave,
         ModelPLAYER player,
         ModelSHOP shop,
-        ControllerENEMY controllerEnemy,
         ControllerSHOP controllerShop
     ) {
         if (!controllerShop.update(shop, player)) return;
 
-        controllerEnemy.startNextWave();
+        wave.startNextWave();
         game.setState(ModelGAME.State.PLAYING);
         game.startTransition(0.45f);
     }
@@ -122,9 +119,9 @@ public class ControllerGAME {
             && RESTART_BUTTON.contains(getWorldClick(viewport));
     }
 
-    private void restart(ModelGAME game, ModelPLAYER player, ControllerENEMY controllerEnemy) {
+    private void restart(ModelGAME game, ModelWAVE wave, ModelPLAYER player) {
         player.reset();
-        controllerEnemy.reset();
+        wave.reset();
         game.startTransition(0.35f);
         game.setState(ModelGAME.State.PLAYING);
     }

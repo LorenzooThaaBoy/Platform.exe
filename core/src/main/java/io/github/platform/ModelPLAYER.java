@@ -1,6 +1,7 @@
 package io.github.platform;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 //keep this mvc, model = player data + player ability state
@@ -32,6 +33,10 @@ public class ModelPLAYER {
     private static final float BASE_ATTACK_HEIGHT = 58f;
     private static final float BASE_UP_ATTACK_WIDTH = 34f;
     private static final float BASE_UP_ATTACK_HEIGHT = 48f;
+    private static final float MAGIC_ORB_SIZE = 18f;
+    private static final float MAGIC_ORB_BASE_SPEED = 185f;
+    private static final float MAGIC_ORB_BASE_DPS = 2f;
+    private static final float MAGIC_ORB_DAMAGE_INTERVAL = 0.25f;
     private static final float[] DAMAGE_MULTIPLIERS = {1f, 1.2f, 1.7f, 2.3f, 3f};
     private static final float[] RANGE_BONUSES = {0f, 14f, 28f, 44f, 62f};
     private static final float[] SPEED_MULTIPLIERS = {1f, 1.15f, 1.32f, 1.5f, 1.7f};
@@ -49,6 +54,7 @@ public class ModelPLAYER {
     //position + current state
     private final Rectangle bounds = new Rectangle(80f, ModelMAP.GROUND_Y, WIDTH, HEIGHT);
     private final Vector2 velocity = new Vector2();
+    private final Rectangle magicOrbBounds = new Rectangle();
     private int lives = BASE_MAX_LIVES;
     private int maxLives = BASE_MAX_LIVES;
     private int facing = 1;
@@ -79,6 +85,8 @@ public class ModelPLAYER {
     private int laserAttackId;
     private boolean laserBeamLocked;
     private boolean laserImpactEnemyHit;
+    private float magicOrbDamageTimer;
+    private int magicOrbAttackId = -100000;
 
     //getters for controller/view stuff
     public Rectangle getBounds() { 
@@ -131,6 +139,18 @@ public class ModelPLAYER {
 
     public boolean hasScatter() {
         return scatterUnlocked;
+    }
+
+    public Rectangle getMagicOrbBounds() {
+        return magicOrbBounds;
+    }
+
+    public float getMagicOrbDamage() {
+        return MAGIC_ORB_BASE_DPS * MAGIC_ORB_DAMAGE_INTERVAL * getSwordDamage();
+    }
+
+    public int getMagicOrbAttackId() {
+        return magicOrbAttackId;
     }
 
     public boolean isLightningRequested() {
@@ -379,6 +399,36 @@ public class ModelPLAYER {
         laserChargeTimer = Math.min(LASER_CHARGE_DURATION, laserChargeTimer + delta);
     }
 
+    public void updateMagicOrb(float directionX, float directionY, float delta) {
+        //only with magic wand
+        if (primaryItem != PrimaryItem.MAGIC_WAND) {
+            magicOrbBounds.set(0f, 0f, 0f, 0f);
+            return;
+        }
+
+        if (magicOrbBounds.width <= 0f) {
+            resetMagicOrbPosition();
+        }
+
+        //new hit id every tick
+        magicOrbDamageTimer -= delta;
+        if (magicOrbDamageTimer <= 0f) {
+            magicOrbAttackId--;
+            magicOrbDamageTimer = MAGIC_ORB_DAMAGE_INTERVAL;
+        }
+
+        float lengthSquared = directionX * directionX + directionY * directionY;
+        if (lengthSquared > 0f) {
+            float length = (float)Math.sqrt(lengthSquared);
+            float speed = MAGIC_ORB_BASE_SPEED * getMoveSpeed() / MOVE_SPEED;
+            magicOrbBounds.x += directionX / length * speed * delta;
+            magicOrbBounds.y += directionY / length * speed * delta;
+        }
+
+        magicOrbBounds.x = MathUtils.clamp(magicOrbBounds.x, 0f, ModelMAP.WORLD_WIDTH - magicOrbBounds.width);
+        magicOrbBounds.y = MathUtils.clamp(magicOrbBounds.y, ModelMAP.GROUND_Y, ModelMAP.WORLD_HEIGHT - magicOrbBounds.height);
+    }
+
     public void startDash() {
         //dash only after upgrade
         if (dashLevel <= 0 || dashTimer > 0f || dashCooldownTimer > 0f) return;
@@ -487,6 +537,9 @@ public class ModelPLAYER {
         laserAttackId = 0;
         laserBeamLocked = false;
         laserImpactEnemyHit = false;
+        magicOrbBounds.set(0f, 0f, 0f, 0f);
+        magicOrbDamageTimer = 0f;
+        magicOrbAttackId = -100000;
     }
 
     private void startLaserBeam() {
@@ -497,6 +550,16 @@ public class ModelPLAYER {
         setLaserBeamEnd(laserDirection > 0 ? ModelMAP.WORLD_WIDTH : 0f);
         laserBeamLocked = false;
         laserImpactEnemyHit = false;
+    }
+
+    private void resetMagicOrbPosition() {
+        //start on player
+        magicOrbBounds.set(
+            bounds.x + bounds.width / 2f - MAGIC_ORB_SIZE / 2f,
+            bounds.y + bounds.height / 2f - MAGIC_ORB_SIZE / 2f,
+            MAGIC_ORB_SIZE,
+            MAGIC_ORB_SIZE
+        );
     }
 
 }

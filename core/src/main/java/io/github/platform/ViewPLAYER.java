@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 public class ViewPLAYER {
@@ -219,46 +218,6 @@ public class ViewPLAYER {
                 centerY - LASER_IMPACT_HEIGHT / 2f,
                 -LASER_IMPACT_WIDTH,
                 LASER_IMPACT_HEIGHT
-            );
-        }
-    }
-
-    public void renderHitboxes(ShapeRenderer shapes, ModelPLAYER player) {
-        if (player.isHurt()) {
-            shapes.setColor(new Color(1f, 0.35f, 0.35f, 0.35f));
-        } else {
-            shapes.setColor(new Color(0.25f, 0.62f, 1f, 0.25f));
-        }
-        shapes.rect(player.getBounds().x, player.getBounds().y, player.getBounds().width, player.getBounds().height);
-
-        if (player.isAttacking()) {
-            shapes.setColor(new Color(1f, 0.86f, 0.35f, 0.55f));
-            shapes.rect(
-                player.getAttackBounds().x,
-                player.getAttackBounds().y,
-                player.getAttackBounds().width,
-                player.getAttackBounds().height
-            );
-        }
-
-        if (player.isDashing()) {
-            shapes.setColor(new Color(0.45f, 0.9f, 1f, 0.45f));
-            shapes.rect(
-                player.getDashBounds().x,
-                player.getDashBounds().y,
-                player.getDashBounds().width,
-                player.getDashBounds().height
-            );
-        }
-
-        if (player.isLaserBeamActive()) {
-            Rectangle laserBeamBounds = player.getLaserBeamBounds();
-            shapes.setColor(new Color(1f, 0.18f, 0.08f, 0.65f));
-            shapes.rect(
-                laserBeamBounds.x,
-                laserBeamBounds.y,
-                laserBeamBounds.width,
-                laserBeamBounds.height
             );
         }
     }

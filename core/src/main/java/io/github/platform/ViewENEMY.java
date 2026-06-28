@@ -25,9 +25,9 @@ public class ViewENEMY {
         lightningImpactRegion = new TextureRegion(lightningTexture, 172, 0, 172, 343);
     }
 
-    public void render(ShapeRenderer shapes, ControllerENEMY controllerEnemy) {
+    public void render(ShapeRenderer shapes, ModelWAVE wave) {
         shapes.setColor(new Color(1f, 0.86f, 0.22f, 1f));
-        for (ModelPROJECTILE projectile : controllerEnemy.getProjectiles()) {
+        for (ModelPROJECTILE projectile : wave.getProjectiles()) {
             shapes.circle(
                 projectile.getBounds().x + projectile.getBounds().width / 2f,
                 projectile.getBounds().y + projectile.getBounds().height / 2f,
@@ -37,8 +37,8 @@ public class ViewENEMY {
 
     }
 
-    public void renderSprites(SpriteBatch batch, ControllerENEMY controllerEnemy) {
-        for (ModelENEMY enemy : controllerEnemy.getEnemies()) {
+    public void renderSprites(SpriteBatch batch, ModelWAVE wave) {
+        for (ModelENEMY enemy : wave.getEnemies()) {
             float spriteWidth = enemy.getBounds().width * SPRITE_SCALE;
             float spriteHeight = enemy.getBounds().height * SPRITE_SCALE;
             float spriteX = enemy.getBounds().x + enemy.getBounds().width / 2f - spriteWidth / 2f;
@@ -50,9 +50,9 @@ public class ViewENEMY {
             }
         }
 
-        if (controllerEnemy.isLightningEffectActive()) {
-            float effectX = controllerEnemy.getLightningEffectX();
-            float effectY = controllerEnemy.getLightningEffectY();
+        if (wave.isLightningEffectActive()) {
+            float effectX = wave.getLightningEffectX();
+            float effectY = wave.getLightningEffectY();
             batch.draw(
                 lightningFallRegion,
                 effectX - LIGHTNING_FALL_WIDTH / 2f,

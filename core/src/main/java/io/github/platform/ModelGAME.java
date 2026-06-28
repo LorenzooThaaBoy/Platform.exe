@@ -9,11 +9,6 @@ public class ModelGAME {
     private State state = State.PLAYING;
     private float transitionTimer;
 
-    //state helpers for view/controller
-    public State getState() {
-        return state;
-    }
-
     public void setState(State state) {
         this.state = state;
     }

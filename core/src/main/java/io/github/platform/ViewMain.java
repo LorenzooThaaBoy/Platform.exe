@@ -33,6 +33,7 @@ public class ViewMain extends ApplicationAdapter {
 
     private ModelGAME game;
     private ModelMAP map;
+    private ModelWAVE wave;
     private ModelPLAYER player;
     private ModelSHOP shop;
 
@@ -62,6 +63,7 @@ public class ViewMain extends ApplicationAdapter {
 
         game = new ModelGAME();
         map = new ModelMAP();
+        wave = new ModelWAVE();
         player = new ModelPLAYER();
         shop = new ModelSHOP();
 
@@ -88,6 +90,7 @@ public class ViewMain extends ApplicationAdapter {
         controllerGame.update(
             game,
             map,
+            wave,
             player,
             shop,
             controllerPlayer,
@@ -135,7 +138,7 @@ public class ViewMain extends ApplicationAdapter {
         }
         renderText();
         if (game.isShop()) {
-            viewShop.renderText(batch, font, shop, player, controllerEnemy.getWave() + 1);
+            viewShop.renderText(batch, font, shop, player, wave.getWave() + 1);
         }
         if (shouldRenderItemSlots()) {
             renderItemSlotSprites();
@@ -161,18 +164,18 @@ public class ViewMain extends ApplicationAdapter {
         viewMap.render(batch, map);
         batch.end();
 
-        //shapes for effects / hitboxes
+        //shapes for effects
         Gdx.gl.glEnable(GL20.GL_BLEND);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
-        viewEnemy.render(shapes, controllerEnemy);
+        viewEnemy.render(shapes, wave);
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
         batch.begin();
-        viewEnemy.renderSprites(batch, controllerEnemy);
+        viewEnemy.renderSprites(batch, wave);
         viewPlayer.renderLaser(batch, player);
         viewPlayer.render(batch, player, game.isPaused() ? 0f : delta);
-        viewPlayer.renderMagicOrb(batch, player, controllerPlayer.getMagicOrbBounds());
+        viewPlayer.renderMagicOrb(batch, player, player.getMagicOrbBounds());
         batch.end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -220,8 +223,8 @@ public class ViewMain extends ApplicationAdapter {
     private void renderText() {
         //hud text
         font.draw(batch, "Lives: " + player.getLives() + "/" + player.getMaxLives(), 16f, ModelMAP.WORLD_HEIGHT - 38f);
-        font.draw(batch, "Wave: " + controllerEnemy.getWave() + "  Enemies: " + controllerEnemy.getSpawnedThisWave() + "/" + controllerEnemy.getEnemiesThisWave(), 16f, ModelMAP.WORLD_HEIGHT - 58f);
-        font.draw(batch, "Enemy hits: " + controllerEnemy.getEnemyHitPoints() + "  Health scale: +" + controllerEnemy.getEnemyHealthIncreases() + "  Speed: " + (int)controllerEnemy.getEnemySpeed(), 16f, ModelMAP.WORLD_HEIGHT - 78f);
+        font.draw(batch, "Wave: " + wave.getWave() + "  Enemies: " + wave.getSpawnedThisWave() + "/" + wave.getEnemiesThisWave(), 16f, ModelMAP.WORLD_HEIGHT - 58f);
+        font.draw(batch, "Enemy hits: " + wave.getEnemyHitPoints() + "  Health scale: +" + wave.getEnemyHealthIncreases() + "  Speed: " + (int)wave.getEnemySpeed(), 16f, ModelMAP.WORLD_HEIGHT - 78f);
 
         if (game.isGameOver()) {
             Rectangle restartButton = controllerGame.getRestartButton();
