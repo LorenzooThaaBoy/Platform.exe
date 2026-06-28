@@ -3,7 +3,8 @@
 ## Game idea 
 Platformer THE GAME is a small 2D arena platformer. The player moves across a compact platform map, jumps between ledges, and fights enemies while trying to stay alive with a limited number of lives.
 
-Enemies spawn from different sides of the map, chase the player, and deal damage on contact. After surviving rounds, the player is able to enter a shop and buy upgrades such as more damage, more range, extra HP, more speed or a primary and secondary item that aids the player by giving certain abilites (like dash or brimstone) that hlp to fight the enemies. 
+The current idea is to grow the game into round-based survival: enemies spawn from different sides of the map, chase the player, and deal damage on 
+contact. After surviving rounds, the player should be able to enter a shop and buy upgrades such as more damage, more range, extra HP, more speed, or a dash. 
 
 ## Development 
 ### Code Strucutre
