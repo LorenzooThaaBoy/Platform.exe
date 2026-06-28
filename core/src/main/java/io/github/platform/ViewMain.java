@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -30,6 +31,7 @@ public class ViewMain extends ApplicationAdapter {
     private Texture lightningTexture;
     private Texture laserTexture;
     private Texture dashTexture;
+    private Music backgroundMusic;
 
     private ModelGAME game;
     private ModelMAP map;
@@ -60,6 +62,10 @@ public class ViewMain extends ApplicationAdapter {
         lightningTexture = new Texture("lightningbolt icon .png");
         laserTexture = new Texture("laser_icon.png");
         dashTexture = new Texture("dashicon.png");
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("NotJumper - Castle Crashers.mp3"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(0.35f);
+        backgroundMusic.play();
 
         game = new ModelGAME();
         map = new ModelMAP();
@@ -108,6 +114,20 @@ public class ViewMain extends ApplicationAdapter {
     }
 
     @Override
+    public void pause() {
+        if (backgroundMusic != null) {
+            backgroundMusic.pause();
+        }
+    }
+
+    @Override
+    public void resume() {
+        if (backgroundMusic != null) {
+            backgroundMusic.play();
+        }
+    }
+
+    @Override
     public void dispose() {
         viewMap.dispose();
         viewPlayer.dispose();
@@ -121,6 +141,7 @@ public class ViewMain extends ApplicationAdapter {
         lightningTexture.dispose();
         laserTexture.dispose();
         dashTexture.dispose();
+        backgroundMusic.dispose();
     }
 
     private void renderGame(float delta) {

@@ -504,11 +504,15 @@ public class ModelPLAYER {
     public void equipPrimaryItem(PrimaryItem primaryItem) {
         this.primaryItem = primaryItem;
         attackTimer = 0f;
+        if (primaryItem == PrimaryItem.MAGIC_WAND) {
+            clearSecondaryItem();
+        }
     }
 
     public void buyMagicWand() {
         if (primaryItem == PrimaryItem.MAGIC_WAND) {
             upgradeMagicOrb();
+            clearSecondaryItem();
             return;
         }
 
@@ -517,6 +521,19 @@ public class ModelPLAYER {
 
     public void equipSecondaryItem(SecondaryItem secondaryItem) {
         this.secondaryItem = secondaryItem;
+        if (secondaryItem != SecondaryItem.NONE) {
+            primaryItem = PrimaryItem.NONE;
+            magicOrbBounds.set(0f, 0f, 0f, 0f);
+        }
+        clearSecondaryState();
+    }
+
+    private void clearSecondaryItem() {
+        secondaryItem = SecondaryItem.NONE;
+        clearSecondaryState();
+    }
+
+    private void clearSecondaryState() {
         lightningRequested = false;
         laserChargeTimer = 0f;
         laserBeamTimer = 0f;
